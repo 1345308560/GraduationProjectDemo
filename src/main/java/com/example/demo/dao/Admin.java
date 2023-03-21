@@ -21,7 +21,7 @@ public class Admin {
 
     //private LocalDateTime update_at;
 
-    private boolean display;
+    private Boolean display;
 
     public Integer getNumber(){
         return this.number;
@@ -47,6 +47,13 @@ public class Admin {
         this.password=password;
     }
 
+    public void setDisplay(boolean display){
+        this.display=display;
+    }
+
+    public Boolean getDisplay(){
+        return this.display;
+    }
 
 
 }
