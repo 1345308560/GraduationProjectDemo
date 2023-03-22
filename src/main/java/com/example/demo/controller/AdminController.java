@@ -1,7 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.dao.Admin;
-import com.example.demo.mapper.AdminRepository;
+import com.example.demo.entity.Admin;
+import com.example.demo.dao.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;

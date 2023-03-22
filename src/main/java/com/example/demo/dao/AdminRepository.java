@@ -1,6 +1,6 @@
-package com.example.demo.mapper;
+package com.example.demo.dao;
 
-import com.example.demo.dao.Admin;
+import com.example.demo.entity.Admin;
 import org.springframework.data.repository.CrudRepository;
 public interface AdminRepository extends CrudRepository<Admin, Integer>{
     @Override
