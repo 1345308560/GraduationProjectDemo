@@ -1,13 +1,11 @@
 package com.example.demo.dao;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name="admin")
 public class Admin {
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
