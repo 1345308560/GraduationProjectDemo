@@ -1,12 +1,14 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.common.R;
 import com.example.demo.entity.Admin;
 import com.example.demo.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -23,7 +25,16 @@ public class AdminController {
     }
 
     @PostMapping (path = "/login")
-    public @ResponseBody Optional<Admin> getById(String id){
-        return adminService.findById(id);
+    public @ResponseBody R<Admin> getById(@RequestBody Map map){
+        String username=map.get("username").toString();
+        String password=map.get("password").toString();
+        if(!adminService.findById(username).isPresent()){
+            return R.error("用户名或密码错误");
+        }
+        Admin admin=adminService.findById(username).get();
+        if(admin.getPassword()!=null&&admin.getPassword().equals(password)){
+            return R.success(admin);
+        }
+        return R.error("用户名或密码错误");
     }
 }
