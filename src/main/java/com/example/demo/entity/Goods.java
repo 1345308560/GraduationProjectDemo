@@ -29,4 +29,6 @@ public class Goods {
 
     private String description;
 
+    private Boolean display;
+
 }
