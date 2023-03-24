@@ -19,4 +19,6 @@ public class User {
 
     private String addr;
 
+    private Boolean display;
+
 }
