@@ -20,7 +20,7 @@ public class AdminController {
 
     @GetMapping(path="/all")
     public @ResponseBody Iterable<Admin> getAllAdmins() {
-        // This returns a JSON or XML with the users
+        // This returns a JSON or XML with the admins
         return adminService.findAll();
     }
 
