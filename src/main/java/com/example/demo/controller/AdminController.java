@@ -23,7 +23,11 @@ public class AdminController {
         // This returns a JSON or XML with the admins
         return adminService.findAll();
     }
-
+    @PostMapping(path ="/create")
+    public @ResponseBody String createAdmin(Integer num){
+        adminService.createAdminByNum(num);
+        return num.toString();
+    }
     @PostMapping (path = "/login")
     public @ResponseBody R<Admin> getById(@RequestBody Map map){
         String username=map.get("username").toString();

@@ -11,22 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @Controller
-@RequestMapping(path="/demo")
+@RequestMapping(path="/user")
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private UserService userService;
-
-    @PostMapping(path="/add")
-    public @ResponseBody String addNewUser (@RequestParam String name
-            , @RequestParam String id) {
-        User n = new User();
-        n.setName(name);
-        n.setId(id);
-        userRepository.save(n);
-        return "Saved";
-    }
 
     @GetMapping(path="/all")
     public @ResponseBody Iterable<User> getAllUsers() {
