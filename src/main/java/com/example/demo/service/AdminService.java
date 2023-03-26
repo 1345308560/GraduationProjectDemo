@@ -38,7 +38,6 @@ public class AdminService {
     public  Iterable<Admin> findAll() {
         return adminRepository.findAll();
     }
-
     public Optional<Admin> findById(String id) {
         return adminRepository.findById(id);
     }
@@ -70,6 +69,5 @@ public class AdminService {
         admin.setUuid(UUID.randomUUID().toString());
         return admin;
     }
-
 
 }
