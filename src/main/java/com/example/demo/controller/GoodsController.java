@@ -64,8 +64,8 @@ public class GoodsController {
      */
     @GetMapping(path = "/all")
     public @ResponseBody R<List<Goods>> getAllGoods(@RequestParam Map map){
-        Integer pagenum= (Integer) map.get("pagenum");
-        Integer pagesize= (Integer) map.get("pagesize");
+        Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
+        Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
         String query= (String) map.get("query");
         if (pagenum==null){
             pagenum=1;
