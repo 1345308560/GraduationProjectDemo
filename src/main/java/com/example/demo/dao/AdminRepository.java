@@ -41,4 +41,16 @@ public interface AdminRepository extends CrudRepository<Admin, String>{
     @Transactional
     @Query(value = "insert into user (name, age) values (:name, :age)", nativeQuery = true)
     void batchInsert(@Param("name") String name, @Param("age") Integer age);
+
+    /**
+     * 通过手机号查找
+     */
+    @Query(value="select * from admin where phone = ?1" ,nativeQuery=true)
+    Optional<Admin> findByPhone(String phone);
+
+    /**
+     * 通过学号号查找
+     */
+    @Query(value="select * from admin where num = ?1" ,nativeQuery=true)
+    Optional<Admin> findByNum(String num);
 }

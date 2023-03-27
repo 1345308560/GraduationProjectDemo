@@ -42,6 +42,11 @@ public class AdminService {
         return adminRepository.findById(id);
     }
 
+    public Optional<Admin> findByPhone(String phone) { return adminRepository.findByPhone(phone); }
+
+    public Optional<Admin> findByNum(String num) {
+        return adminRepository.findByNum(num);
+    }
     /**
      * 创建一个随机Admin
      * @return admin
