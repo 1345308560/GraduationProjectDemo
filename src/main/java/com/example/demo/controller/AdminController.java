@@ -29,13 +29,25 @@ public class AdminController {
         return num.toString();
     }
     @PostMapping (path = "/login")
-    public @ResponseBody R<Admin> getById(@RequestBody Map map){
+    public @ResponseBody R<Admin> login(@RequestBody Map map){
         String username=map.get("username").toString();
         String password=map.get("password").toString();
-        if(!adminService.findById(username).isPresent()){
+        if(username.length()==10){
+            //如果前端发送的账号是10位  那么使用学号进行登录
+            if(!adminService.findByNum(username).isPresent()){
+                return R.error("用户名或密码错误");
+            }
+            Admin admin=adminService.findByNum(username).get();
+            if(admin.getPassword()!=null&&admin.getPassword().equals(password)){
+                return R.success(admin);
+            }
             return R.error("用户名或密码错误");
         }
-        Admin admin=adminService.findById(username).get();
+        //否则使用手机号进行登录
+        if(!adminService.findByPhone(username).isPresent()){
+            return R.error("用户名或密码错误");
+        }
+        Admin admin=adminService.findByPhone(username).get();
         if(admin.getPassword()!=null&&admin.getPassword().equals(password)){
             return R.success(admin);
         }
