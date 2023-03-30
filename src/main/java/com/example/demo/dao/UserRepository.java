@@ -22,9 +22,9 @@ public interface UserRepository extends CrudRepository<User, String> {
 
     @Modifying
     @Query(value="update user set user.display = 1 where number = ?1" ,nativeQuery=true)
-    public int deleteUser(Integer id);//软删除，修改display即可
+    int deleteUser(Integer id);//软删除，修改display即可
 
     @Modifying
     @Query(value="update user set user.display = 0 where number = ?1" ,nativeQuery=true)
-    public int recoverUser(Integer id);//恢复删除
+    int recoverUser(Integer id);//恢复删除
 }
