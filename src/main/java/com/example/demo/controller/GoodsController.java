@@ -4,6 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.common.R;
 import com.example.demo.entity.Goods;
 import com.example.demo.service.GoodsService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping(path="/goods")
 public class GoodsController {
@@ -76,6 +78,8 @@ public class GoodsController {
         if (query==null){
             query="";
         }
+        log.info("pagenum:{}",pagenum);
+        log.info("pagesize:{}",pagesize);
         return R.success(goodsService.findAllGoods(pagenum,pagesize,query));
     }
 }

@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dao.GoodsRepository;
 import com.example.demo.entity.Goods;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-
+@Slf4j
 @Service
 public class GoodsService {
 
@@ -102,10 +103,10 @@ public class GoodsService {
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空
-        if(pagenum > (totalPage/pagesize + 1) || pagenum < 1){
+        if(pagenum > totalPage || pagenum < 1){
             return null;
         }
-
-        return goodsRepository.findAllGoods(pagenum, pagesize, query);
+        Integer query1=(pagenum-1)*pagesize;
+        return goodsRepository.findAllGoods(query1, pagesize, query);
     }
 }
