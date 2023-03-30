@@ -53,4 +53,15 @@ public interface AdminRepository extends CrudRepository<Admin, String>{
      */
     @Query(value="select * from admin where num = ?1" ,nativeQuery=true)
     Optional<Admin> findByNum(String num);
+
+    /*
+     * 通过token查找
+     */
+    @Query(value="select * from admin where token = ?1" ,nativeQuery=true)
+    Optional<Admin> findByToken(String token);
+
+    @Modifying
+    @Query(value="update admin set admin.token = ?2 where id = ?1" ,nativeQuery=true)
+    int updateToken(Integer id,String token);//更新token
+
 }

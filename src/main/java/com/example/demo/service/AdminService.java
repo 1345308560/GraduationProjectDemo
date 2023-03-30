@@ -47,6 +47,9 @@ public class AdminService {
     public Optional<Admin> findByNum(String num) {
         return adminRepository.findByNum(num);
     }
+
+    public Optional<Admin> findByToken(String token){ return adminRepository.findByToken(token); }
+
     /**
      * 创建一个随机Admin
      * @return admin
