@@ -49,7 +49,17 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
-
+        <!--ES依赖 Start-->
+        <dependency>
+            <groupId>org.elasticsearch.client</groupId>
+            <artifactId>elasticsearch-rest-high-level-client</artifactId>
+            <version>6.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
+        </dependency>
+        <!--ES依赖 End-->
 
     </dependencies>
 
