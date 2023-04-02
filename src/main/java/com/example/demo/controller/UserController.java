@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -21,25 +22,18 @@ public class UserController {
     private UserService userService;
 
 
-    @PostMapping(path = "/updateState")
-    public @ResponseBody R<User> updateUserState(@RequestBody Map map){
-        Integer userNumber= (Integer) map.get("number");
-        Boolean userDisplay=(Boolean) map.get("display");
-        if(!userService.findById(userNumber).isPresent()){
-            return R.error("用户不存在");
+    @PostMapping(path = "/delete")
+    public @ResponseBody R<User> deleteUser(@RequestBody Map map){
+        Integer userId= (Integer) map.get("id");
+        if(!userService.findById(userId).isPresent()){
+            return R.error("用户删除失败");
         }
-        User user=userService.findById(userNumber).get();
-        if (user.getDisplay()!=userDisplay){
+        userService.deleteUser(userId);
+        User user=userService.findById(userId).get();
+        if (user.getDisplay()==true){
             return R.success(user);
         }
-        if(userDisplay==false){
-            userService.deleteUser(userNumber);
-            User userResult=userService.findById(userNumber).get();
-            return R.success(userResult);
-        }
-        userService.recoverUser(userNumber);
-        User userResult=userService.findById(userNumber).get();
-        return R.success(userResult);
+        return R.error("用户删除失败");
     }
 
     /**
@@ -72,6 +66,29 @@ public class UserController {
         log.info("pagenum:{}",pagenum);
         log.info("pagesize:{}",pagesize);
         return R.success(userService.findAllUsers(pagenum,pagesize,query));
+    }
+
+    @PostMapping(path = "/add")
+    public @ResponseBody R<Optional<User>> addUser(@RequestBody Map map){
+        String username=map.get("username").toString();
+        String num=map.get("number").toString();
+        String phone=map.get("phone").toString();
+        String password=map.get("password").toString();
+        String token=null;
+
+        if(userService.findByPhone(phone).isPresent()){
+            return R.error("手机号已被注册");
+        }
+        if(userService.findByNum(num).isPresent()){
+            return R.error("学号已被注册");
+        }
+        if(userService.findByUsername(username).isPresent()){
+            return R.error("用户名已被注册");
+        }
+
+        Optional<User> newUser=userService.addOneUser(username,password,num,phone,token);
+
+        return R.success(newUser);
     }
 }
 

@@ -21,13 +21,15 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> findById(String id) {
+    public Optional<User> findById(Integer id) {
         return userRepository.findById(id);
     }
 
-    public Optional<User> findById(Integer number){
-        return userRepository.findById(number);
-    }
+    public Optional<User> findByUsername(String username){ return userRepository.findByUsername(username); }
+
+    public Optional<User> findByPhone(String phone){ return userRepository.findByPhone(phone); }
+
+    public Optional<User> findByNum(String num){ return userRepository.findByNum(num); }
 
     @Transactional//UPDATE 或 DELETE 操作需要使用事务，需要在定义的业务逻辑层（Service层），在方法上使用@Transactional注解管理事务。
     public int deleteUser(Integer userId){
@@ -50,5 +52,10 @@ public class UserService {
         }
         Integer query1=(pagenum-1)*pagesize;
         return userRepository.findAllUsers(query1, pagesize, query);
+    }
+
+    public Optional<User> addOneUser(String username,String password,String num,String phone,String token){
+        userRepository.createOneUser(username,password,num,phone,token);
+        return userRepository.findByNum(num);
     }
 }
