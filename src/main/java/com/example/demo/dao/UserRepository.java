@@ -38,11 +38,11 @@ public interface UserRepository extends CrudRepository<User, String> {
     Optional<User> findByUsername(String username);
 
     @Modifying
-    @Query(value="update user set user.display = 1 where number = ?1" ,nativeQuery=true)
+    @Query(value="update user set user.display = 1 where id = ?1" ,nativeQuery=true)
     int deleteUser(Integer id);//软删除，修改display即可
 
     @Modifying
-    @Query(value="update user set user.display = 0 where number = ?1" ,nativeQuery=true)
+    @Query(value="update user set user.display = 0 where id = ?1" ,nativeQuery=true)
     int recoverUser(Integer id);//恢复删除
 
 
@@ -58,8 +58,8 @@ public interface UserRepository extends CrudRepository<User, String> {
      */
     @Modifying
     @Transactional
-    @Query(value = "insert into user (username,password,num,phone,token) " +
-            "values (?1, ?2, ?3, ?4, ?5)", nativeQuery = true)
+    @Query(value = "insert into user (username,password,num,phone,token,uuid) " +
+            "values (?1, ?2, ?3, ?4, ?5, ?6)", nativeQuery = true)
     void createOneUser( String username, String password,
-                        String num, String phone, String token);
+                        String num, String phone, String token,String uuid);
 }

@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.util.DigestUtils;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,15 +25,15 @@ public class UserController {
 
 
     @PostMapping(path = "/delete")
-    public @ResponseBody R<User> deleteUser(@RequestBody Map map){
+    public @ResponseBody R deleteUser(@RequestBody Map map){
         Integer userId= (Integer) map.get("id");
+        userService.deleteUser(userId);
         if(!userService.findById(userId).isPresent()){
             return R.error("用户删除失败");
         }
-        userService.deleteUser(userId);
         User user=userService.findById(userId).get();
         if (user.getDisplay()==true){
-            return R.success(user);
+            return R.success(null,"用户删除成功");
         }
         return R.error("用户删除失败");
     }
@@ -71,10 +73,9 @@ public class UserController {
     @PostMapping(path = "/add")
     public @ResponseBody R<Optional<User>> addUser(@RequestBody Map map){
         String username=map.get("username").toString();
-        String num=map.get("number").toString();
+        String num=map.get("num").toString();
         String phone=map.get("phone").toString();
         String password=map.get("password").toString();
-        String token=null;
 
         if(userService.findByPhone(phone).isPresent()){
             return R.error("手机号已被注册");
@@ -85,7 +86,8 @@ public class UserController {
         if(userService.findByUsername(username).isPresent()){
             return R.error("用户名已被注册");
         }
-
+        String token = DigestUtils.md5DigestAsHex(num.getBytes(StandardCharsets.UTF_8));
+        log.info("token:{}",token);
         Optional<User> newUser=userService.addOneUser(username,password,num,phone,token);
 
         return R.success(newUser);

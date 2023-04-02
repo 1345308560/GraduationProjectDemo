@@ -55,7 +55,7 @@ public class UserService {
     }
 
     public Optional<User> addOneUser(String username,String password,String num,String phone,String token){
-        userRepository.createOneUser(username,password,num,phone,token);
+        userRepository.createOneUser(username,password,num,phone,token,username);
         return userRepository.findByNum(num);
     }
 }
