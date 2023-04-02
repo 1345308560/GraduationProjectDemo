@@ -17,12 +17,22 @@ public class R<T> {
 
     private T data; //数据
 
+    private Integer total;
+
     private Map map = new HashMap(); //动态数据
 
     public static <T> R<T> success(T object) {
         R<T> r = new R<T>();
         r.data = object;
         r.code = 200;
+        return r;
+    }
+
+    public static <T> R<T> success(T object,Integer total) {
+        R<T> r = new R<T>();
+        r.data = object;
+        r.code = 200;
+        r.total = total;
         return r;
     }
 
