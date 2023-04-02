@@ -27,7 +27,7 @@ public class AdminService {
     public void createAdminByNum(Integer num){
         for(int i=0;i<num;i++){
             Admin admin = randomOneAdmin();
-            adminRepository.createOneAdmin(admin.getId(), admin.getUsername(),
+            adminRepository.createOneAdmin( admin.getUsername(),
                     admin.getPassword(),admin.getNum(),
                     admin.getPhone(),
                     admin.getToken(),admin.getCreate_at(),
@@ -63,7 +63,8 @@ public class AdminService {
         String password = UUID.randomUUID().toString();
         admin.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
         admin.setNum(String.valueOf((long)(Math.random()*9000000000L)+1000000000L));
-        admin.setPhone(String.valueOf((long)(Math.random()*9000000000L)+1000000000L));
+        // 生成11位数的以1开头的随机手机号
+        admin.setPhone("1"+String.valueOf((long)(Math.random()*9000000000L)+1000000000L));
         admin.setToken(DigestUtils.md5DigestAsHex(UUID.randomUUID().toString().getBytes()));
         Date startDate = Date.from(Instant.parse("2022-01-01T00:00:00.00Z"));
         Date endDate = new Date();

@@ -27,9 +27,9 @@ public interface AdminRepository extends CrudRepository<Admin, String>{
      */
     @Modifying
     @Transactional
-    @Query(value = "insert into admin (id,username,password,num,phone,token,create_at,update_at,display,uuid) " +
-            "values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)", nativeQuery = true)
-    void createOneAdmin(Integer id,String username, String password,
+    @Query(value = "insert into admin (username,password,num,phone,token,create_at,update_at,display,uuid) " +
+            "values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)", nativeQuery = true)
+    void createOneAdmin(String username, String password,
                         String num,String phone,String token,
                         Date create_at,Date update_at,
                         Integer display,String uuid);
