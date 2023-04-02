@@ -31,25 +31,18 @@ public class GoodsController {
         goodsService.insertGoods(num);
     }
 
-    @PostMapping(path = "/updateState")
-    public @ResponseBody R<Goods> updateGoodsState(@RequestBody Map map){
+    @PostMapping(path = "/delete")
+    public @ResponseBody R<Goods> deleteGoods(@RequestBody Map map){
         Integer goodsId= (Integer) map.get("id");
-        Boolean goodsDisplay=(Boolean) map.get("display");
         if(!goodsService.findById(goodsId).isPresent()){
-            return R.error("商品不存在");
+            return R.error("商品删除失败");
         }
+        goodsService.deleteGoods(goodsId);
         Goods goods=goodsService.findById(goodsId).get();
-        if (goods.getDisplay()!=goodsDisplay){
+        if (goods.getDisplay()==true){
             return R.success(goods);
         }
-        if(goodsDisplay==false){
-            goodsService.deleteGoods(goodsId);
-            goods.setDisplay(true);
-            return R.success(goods);
-        }
-        goodsService.recoverGoods(goodsId);
-        goods.setDisplay(false);
-        return R.success(goods);
+        return R.error("商品删除失败");
     }
     /**
      * Get请求：
