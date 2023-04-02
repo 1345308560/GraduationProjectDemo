@@ -41,9 +41,13 @@ public class UserService {
         return userRepository.recoverUser(userId);
     }
 
+    public Integer findAllUserTotal(String query){
+        return  userRepository.countUser(query);
+    }
+
     public List<User> findAllUsers(Integer pagenum, Integer pagesize, String query) {
         // 获取商品的总数
-        int total = userRepository.countGoods(query);
+        int total = userRepository.countUser(query);
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空

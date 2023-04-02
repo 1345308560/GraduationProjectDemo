@@ -97,6 +97,11 @@ public class GoodsService {
         return good;
     }
 
+    public Integer findAllGoodsTotal(String query){
+        return  goodsRepository.countGoods(query);
+    }
+
+
     public List<Goods> findAllGoods(Integer pagenum, Integer pagesize, String query) {
         // 获取商品的总数
         int total = goodsRepository.countGoods(query);

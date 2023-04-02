@@ -65,9 +65,8 @@ public class UserController {
         if (query==null){
             query="";
         }
-        log.info("pagenum:{}",pagenum);
-        log.info("pagesize:{}",pagesize);
-        return R.success(userService.findAllUsers(pagenum,pagesize,query));
+        Integer total=userService.findAllUserTotal(query);
+        return R.success(userService.findAllUsers(pagenum,pagesize,query),total);
     }
 
     @PostMapping(path = "/add")

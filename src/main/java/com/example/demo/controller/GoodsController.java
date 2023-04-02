@@ -34,13 +34,13 @@ public class GoodsController {
     @PostMapping(path = "/delete")
     public @ResponseBody R<Goods> deleteGoods(@RequestBody Map map){
         Integer goodsId= (Integer) map.get("id");
+        goodsService.deleteGoods(goodsId);
         if(!goodsService.findById(goodsId).isPresent()){
             return R.error("商品删除失败");
         }
-        goodsService.deleteGoods(goodsId);
         Goods goods=goodsService.findById(goodsId).get();
         if (goods.getDisplay()==true){
-            return R.success(goods);
+            return R.success(null,"商品删除成功");
         }
         return R.error("商品删除失败");
     }
@@ -71,8 +71,7 @@ public class GoodsController {
         if (query==null){
             query="";
         }
-        log.info("pagenum:{}",pagenum);
-        log.info("pagesize:{}",pagesize);
-        return R.success(goodsService.findAllGoods(pagenum,pagesize,query));
+        Integer total=goodsService.findAllGoodsTotal(query);
+        return R.success(goodsService.findAllGoods(pagenum,pagesize,query),total);
     }
 }
