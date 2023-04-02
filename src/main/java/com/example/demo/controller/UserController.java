@@ -1,15 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.R;
-import com.example.demo.entity.Goods;
 import com.example.demo.entity.User;
-import com.example.demo.dao.UserRepository;
 import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
