@@ -58,7 +58,7 @@ public class UserService {
     }
     // 按照query获取商品的总数
     public int getTotalPage(String query){
-        return userRepository.countGoods(query);
+        return userRepository.countUser(query);
     }
     public Optional<User> addOneUser(String username,String password,String num,String phone,String token){
         userRepository.createOneUser(username,password,num,phone,token,username);

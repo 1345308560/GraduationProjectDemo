@@ -71,7 +71,7 @@ public class GoodsController {
         if (query==null){
             query="";
         }
-        Integer total=goodsService.findAllGoodsTotal(query);
-        return R.success(goodsService.findAllGoods(pagenum,pagesize,query),total);
+        Integer total=goodsService.getTotalPage(query);
+        return R.success(goodsService.findAllGoods(pagenum,pagesize,query)).add("total",total);
     }
 }

@@ -95,7 +95,7 @@ public class GoodsService {
         return good;
     }
 
-    public Integer findAllGoodsTotal(String query){
+    public Integer getTotalPage(String query){
         return  goodsRepository.countGoods(query);
     }
 
