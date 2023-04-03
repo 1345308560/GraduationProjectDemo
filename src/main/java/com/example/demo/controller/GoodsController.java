@@ -31,7 +31,7 @@ public class GoodsController {
         goodsService.insertGoods(num);
     }
 
-    @PostMapping(path = "/delete")
+    @PutMapping(path = "/delete")
     public @ResponseBody R<Goods> deleteGoods(@RequestBody Map map){
         Integer goodsId= (Integer) map.get("id");
         goodsService.deleteGoods(goodsId);

@@ -26,7 +26,7 @@ public class UserController {
     }
 
 
-    @PostMapping(path = "/delete")
+    @PutMapping(path = "/delete")
     public @ResponseBody R deleteUser(@RequestBody Map map){
         Integer userId= (Integer) map.get("id");
         userService.deleteUser(userId);
