@@ -90,5 +90,17 @@ public class UserController {
 
         return R.success(newUser);
     }
+    /**
+     * Get请求：
+     * 请求接口：/user/generate
+     * 携带数据：num:创建用户数量
+     * 返回值为num
+     */
+    @GetMapping(path = "/generate")
+    public @ResponseBody  String generateUser(@RequestParam Map map){
+        int num= Integer.parseInt((String) map.get("num"));
+        userService.addUsers(num);
+        return Integer.toString(num);
+    }
 }
 

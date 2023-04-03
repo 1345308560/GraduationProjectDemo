@@ -62,4 +62,42 @@ public interface UserRepository extends CrudRepository<User, String> {
             "values (?1, ?2, ?3, ?4, ?5, ?6)", nativeQuery = true)
     void createOneUser( String username, String password,
                         String num, String phone, String token,String uuid);
+    /**
+     * 插入创建的随机用户
+     * private String username;
+     *
+     *     private String password;
+     *
+     *     private String num;//学号
+     *
+     *     private String phone;//手机号
+     *
+     *     private String qq;//qq号
+     *
+     *     private String addr;
+     *
+     *     private Integer ban;
+     *
+     *     private String token;
+     *
+     *     private String icon; // 头像
+     *
+     *     private Date create_at;
+     *
+     *     private Date update_at;
+     *
+     *     private Integer display;
+     *
+     *     private String uuid;
+     */
+    @Modifying
+    @Transactional
+    @Query(value = "insert into user (username,password,num,phone,qq,addr,ban," +
+            "token,icon,create_at,update_at,display,uuid) " +
+            "values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
+            nativeQuery = true)
+    void createOneUser2(String username, String password,
+                        String num, String phone, String qq, String addr, Integer ban,
+                        String token, String icon, Date create_at, Date update_at,
+                        Integer display, String uuid);
 }
