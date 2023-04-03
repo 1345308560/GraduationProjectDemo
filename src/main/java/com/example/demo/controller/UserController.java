@@ -1,15 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.R;
-import com.example.demo.entity.Goods;
 import com.example.demo.entity.User;
-import com.example.demo.dao.UserRepository;
 import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.util.DigestUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -20,8 +18,12 @@ import java.util.Optional;
 @Controller
 @RequestMapping(path="/user")
 public class UserController {
-    @Autowired
+    // Set方法注入
     private UserService userService;
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
 
 
     @PostMapping(path = "/delete")
@@ -32,7 +34,7 @@ public class UserController {
             return R.error("用户删除失败");
         }
         User user=userService.findById(userId).get();
-        if (user.getDisplay()==true){
+        if (user.getDisplay()){
             return R.success(null,"用户删除成功");
         }
         return R.error("用户删除失败");
@@ -52,21 +54,24 @@ public class UserController {
      * 下一页没有数据返回其他状态值，message：无更多数据
      */
     @GetMapping(path = "/all")
-    public @ResponseBody R<List<User>> getAllUsers(@RequestParam Map map){
+    public @ResponseBody R<List<User>> getAllUsers(@RequestParam Map<String,Object> map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
         String query= (String) map.get("query");
-        if (pagenum==null){
+        if (pagenum == null){
             pagenum=1;
         }
-        if (pagesize==null){
+        if (pagesize == null){
             pagesize=10;
         }
         if (query==null){
             query="";
         }
-        Integer total=userService.findAllUserTotal(query);
-        return R.success(userService.findAllUsers(pagenum,pagesize,query),total);
+        // 获取总页数
+        Integer total=userService.getTotalPage(query);
+        log.info("pagenum:{}",pagenum);
+        log.info("pagesize:{}",pagesize);
+        return R.success(userService.findAllUsers(pagenum,pagesize,query)).add("total",total);
     }
 
     @PostMapping(path = "/add")
@@ -90,6 +95,18 @@ public class UserController {
         Optional<User> newUser=userService.addOneUser(username,password,num,phone,token);
 
         return R.success(newUser);
+    }
+    /**
+     * Get请求：
+     * 请求接口：/user/generate
+     * 携带数据：num:创建用户数量
+     * 返回值为num
+     */
+    @GetMapping(path = "/generate")
+    public @ResponseBody  String generateUser(@RequestParam Map map){
+        int num= Integer.parseInt((String) map.get("num"));
+        userService.addUsers(num);
+        return Integer.toString(num);
     }
 }
 
