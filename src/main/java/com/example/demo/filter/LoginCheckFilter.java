@@ -49,8 +49,9 @@ public class LoginCheckFilter implements Filter {
                 "/front/**",
                 "/user/login",
                 "/favicon.ico",
-                "/ml/**",             // 机器学习接口，测试使用，正式上线时需要删除
-                "/user/generate"      // 生成随机用户，测试使用，正式上线时需要删除
+                "/ml/**",              // 机器学习接口，测试使用，正式上线时需要删除
+                "/user/**"             // 开放user接口，测试使用，正式上线时需要删除
+
         };
 
         //2、判断本次请求是否需要处理

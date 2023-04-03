@@ -9,7 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "admin")
@@ -29,12 +28,12 @@ public class AdminController {
         return num.toString();
     }
     @PostMapping (path = "/login")
-    public @ResponseBody R<Admin> login(@RequestBody Map map){
+    public @ResponseBody R<Admin> login(@RequestBody Map<String,Object> map){
         String username=map.get("username").toString();
         String password=map.get("password").toString();
         if(username.length()==10){
             //如果前端发送的账号是10位  那么使用学号进行登录
-            if(!adminService.findByNum(username).isPresent()){
+            if(adminService.findByNum(username).isEmpty()){
                 return R.error("用户名或密码错误");
             }
             Admin admin=adminService.findByNum(username).get();
@@ -44,7 +43,7 @@ public class AdminController {
             return R.error("用户名或密码错误");
         }
         //否则使用手机号进行登录
-        if(!adminService.findByPhone(username).isPresent()){
+        if(adminService.findByPhone(username).isEmpty()){
             return R.error("用户名或密码错误");
         }
         Admin admin=adminService.findByPhone(username).get();

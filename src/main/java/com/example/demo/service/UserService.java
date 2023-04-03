@@ -46,7 +46,7 @@ public class UserService {
 
     public List<User> findAllUsers(Integer pagenum, Integer pagesize, String query) {
         // 获取商品的总数
-        int total = userRepository.countGoods(query);
+        int total = getTotalPage(query);
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空
@@ -56,7 +56,10 @@ public class UserService {
         Integer query1=(pagenum-1)*pagesize;
         return userRepository.findAllUsers(query1, pagesize, query);
     }
-
+    // 按照query获取商品的总数
+    public int getTotalPage(String query){
+        return userRepository.countGoods(query);
+    }
     public Optional<User> addOneUser(String username,String password,String num,String phone,String token){
         userRepository.createOneUser(username,password,num,phone,token,username);
         return userRepository.findByNum(num);
