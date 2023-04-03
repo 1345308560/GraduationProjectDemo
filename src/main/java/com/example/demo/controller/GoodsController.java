@@ -73,6 +73,7 @@ public class GoodsController {
         }
         log.info("pagenum:{}",pagenum);
         log.info("pagesize:{}",pagesize);
-        return R.success(goodsService.findAllGoods(pagenum,pagesize,query));
+        return R.success(goodsService.findAllGoods(pagenum,pagesize,query))
+                .add("total",goodsService.countGoods(query));
     }
 }

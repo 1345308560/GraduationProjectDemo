@@ -97,14 +97,20 @@ public class GoodsService {
 
     public List<Goods> findAllGoods(Integer pagenum, Integer pagesize, String query) {
         // 获取商品的总数
-        int total = goodsRepository.countGoods(query);
+        int total = countGoods(query);
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空
         if(pagenum > totalPage || pagenum < 1){
             return null;
         }
-        Integer query1=(pagenum-1)*pagesize;
-        return goodsRepository.findAllGoods(query1, pagesize, query);
+        // 计算偏移量
+        pagenum=(pagenum-1)*pagesize;
+        return goodsRepository.findAllGoods(pagenum, pagesize, query);
+    }
+
+    // 查询商品的总数
+    public int countGoods(String query){
+        return goodsRepository.countGoods(query);
     }
 }

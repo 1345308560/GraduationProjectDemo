@@ -53,8 +53,8 @@ public class UserService {
         if(pagenum > totalPage || pagenum < 1){
             return null;
         }
-        Integer query1=(pagenum-1)*pagesize;
-        return userRepository.findAllUsers(query1, pagesize, query);
+        pagenum = (pagenum-1)*pagesize;
+        return userRepository.findAllUsers(pagenum, pagesize, query);
     }
     // 按照query获取商品的总数
     public int getTotalPage(String query){
