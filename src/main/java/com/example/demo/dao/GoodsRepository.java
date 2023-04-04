@@ -40,10 +40,10 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
                            String img3, Date create_at, Date update_at, Integer display);
     // 查询总条数
     @Query(value="select count(*) from goods where goods.display = 0" ,nativeQuery=true)
-    int countGoods(String query);
+    int countGoods();
     // 分页查询
     @Query(value="select * from goods where goods.display = 0 limit ?1, ?2" ,nativeQuery=true)
-    List<Goods> findAllGoods(Integer pagenum, Integer pagesize, String query);
+    List<Goods> findAllGoods(Integer pagenum, Integer pagesize);
 
     /**
      * 插入一条Goods
