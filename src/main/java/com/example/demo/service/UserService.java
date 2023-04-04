@@ -66,7 +66,6 @@ public class UserService {
     public List<User> findCertainUsers(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
         int total = getCertainPage(kind,query);
-        log.info("total:{}",total);
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空
@@ -75,11 +74,10 @@ public class UserService {
         }
 
         Integer query1=(pagenum-1)*pagesize;
-        String sql="select * from user a join user b " +
+        String sql="select a.* from user a join user b " +
                 "on a.id = b.id " +
-                "where a.display=0 and b."+kind+"="+query+
+                "where a.display=0 and b."+kind+" like '%"+query+"%'"+
                 " limit "+query1+" , "+pagesize;
-        log.info("sql:{}",sql);
         List<User> users=entityManager.createNativeQuery(sql).getResultList();
         return users;
     }
@@ -88,7 +86,9 @@ public class UserService {
         return userRepository.countUser();
     }
     public int getCertainPage(String kind,String query){
-        String sql="select * from user a join user b on a.id = b.id where a.display=0 and b."+kind+"="+query;
+        String sql="select a.* from user a join user b " +
+                "on a.id = b.id " +
+                "where a.display=0 and b."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }
