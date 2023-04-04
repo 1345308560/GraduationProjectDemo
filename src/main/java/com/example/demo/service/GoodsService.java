@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dao.GoodsRepository;
 import com.example.demo.entity.Goods;
+import com.example.demo.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,10 @@ public class GoodsService {
 
     public Optional<Goods> findById(Integer id){
         return goodsRepository.findById(id);
+    }
+
+    public Optional<Goods> findByGoodsId(String goods_id){
+        return goodsRepository.findByGoodsId(goods_id);
     }
 
     @Transactional//UPDATE 或 DELETE 操作需要使用事务，需要在定义的业务逻辑层（Service层），在方法上使用@Transactional注解管理事务。
@@ -95,6 +100,11 @@ public class GoodsService {
         return good;
     }
 
+    public Integer getTotalPage(String query){
+        return  goodsRepository.countGoods(query);
+    }
+
+
     public List<Goods> findAllGoods(Integer pagenum, Integer pagesize, String query) {
         // 获取商品的总数
         int total = countGoods(query);
@@ -112,5 +122,13 @@ public class GoodsService {
     // 查询商品的总数
     public int countGoods(String query){
         return goodsRepository.countGoods(query);
+    }
+
+    public Optional<Goods> addOneGoods(String goods_id, String title, String uid,
+                                       Integer degree, Integer type, BigDecimal price_ago, BigDecimal price,
+                                       Integer quantity, String description, String img1, String img2,
+                                       String img3,String uuid){
+        goodsRepository.insertOneGoods(goods_id,title,uid,degree,type,price_ago,price,quantity,description,img1,img2,img3,uuid);
+        return goodsRepository.findByGoodsId(goods_id);
     }
 }

@@ -48,10 +48,11 @@ public interface UserRepository extends CrudRepository<User, String> {
 
     // 查询总条数
     @Query(value="select count(*) from user where user.display = 0" ,nativeQuery=true)
-    int countGoods(String query);
+    int countUser();
     // 分页查询
     @Query(value="select * from user where user.display = 0 limit ?1, ?2" ,nativeQuery=true)
-    List<User> findAllUsers(Integer pagenum, Integer pagesize, String query);
+    List<User> findAllUsers(Integer pagenum, Integer pagesize);
+
 
     /**
      * 插入一条User

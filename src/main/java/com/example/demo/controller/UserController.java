@@ -26,7 +26,7 @@ public class UserController {
     }
 
 
-    @PostMapping(path = "/delete")
+    @PutMapping(path = "/delete")
     public @ResponseBody R deleteUser(@RequestBody Map map){
         Integer userId= (Integer) map.get("id");
         userService.deleteUser(userId);
@@ -57,21 +57,25 @@ public class UserController {
     public @ResponseBody R<List<User>> getAllUsers(@RequestParam Map<String,Object> map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
-        String query= (String) map.get("query");
+        String query= map.get("query").toString();
+        String kind=map.get("kind").toString();
         if (pagenum == null){
             pagenum=1;
         }
         if (pagesize == null){
             pagesize=10;
         }
-        if (query==null){
-            query="";
+        if(query==""){
+            // 获取总页数
+            Integer total=userService.getTotalPage();
+            log.info("query为空");
+            return R.success(userService.findAllUsers(pagenum,pagesize)).add("total",total);
+        }else {
+            log.info("query不为空");
+            // 获取总页数
+            Integer total = userService.getCertainPage(kind, query);
+            return R.success(userService.findCertainUsers(pagenum, pagesize, kind, query)).add("total", total);
         }
-        // 获取总页数
-        Integer total=userService.getTotalPage(query);
-        log.info("pagenum:{}",pagenum);
-        log.info("pagesize:{}",pagesize);
-        return R.success(userService.findAllUsers(pagenum,pagesize,query)).add("total",total);
     }
 
     @PostMapping(path = "/add")
