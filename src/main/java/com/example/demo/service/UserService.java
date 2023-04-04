@@ -1,9 +1,11 @@
 package com.example.demo.service;
 
+import com.example.demo.common.R;
 import com.example.demo.dao.UserRepository;
-import com.example.demo.entity.Admin;
-import com.example.demo.entity.Goods;
 import com.example.demo.entity.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,8 +16,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UserService {
+
+    @PersistenceContext
+    EntityManager entityManager;
 
     @Autowired
     private UserRepository userRepository;
@@ -44,9 +50,9 @@ public class UserService {
         return userRepository.recoverUser(userId);
     }
 
-    public List<User> findAllUsers(Integer pagenum, Integer pagesize, String query) {
+    public List<User> findAllUsers(Integer pagenum, Integer pagesize) {
         // 获取商品的总数
-        int total = getTotalPage(query);
+        int total = getTotalPage();
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空
@@ -54,11 +60,37 @@ public class UserService {
             return null;
         }
         Integer query1=(pagenum-1)*pagesize;
-        return userRepository.findAllUsers(query1, pagesize, query);
+        return userRepository.findAllUsers(query1, pagesize);
+    }
+    //query不为空时，查询特定字段，使用entityManager 创建本地查询自定义sql
+    public List<User> findCertainUsers(Integer pagenum, Integer pagesize, String kind, String query) {
+        // 获取商品的总数
+        int total = getCertainPage(kind,query);
+        log.info("total:{}",total);
+        // 计算总页数
+        int totalPage = total/pagesize + 1;
+        // 如果传入参数超出页数范围，则返回空
+        if(pagenum > totalPage || pagenum < 1){
+            return null;
+        }
+
+        Integer query1=(pagenum-1)*pagesize;
+        String sql="select * from user a join user b " +
+                "on a.id = b.id " +
+                "where a.display=0 and b."+kind+"="+query+
+                " limit "+query1+" , "+pagesize;
+        log.info("sql:{}",sql);
+        List<User> users=entityManager.createNativeQuery(sql).getResultList();
+        return users;
     }
     // 按照query获取商品的总数
-    public int getTotalPage(String query){
-        return userRepository.countUser(query);
+    public int getTotalPage(){
+        return userRepository.countUser();
+    }
+    public int getCertainPage(String kind,String query){
+        String sql="select * from user a join user b on a.id = b.id where a.display=0 and b."+kind+"="+query;
+        Integer total= entityManager.createNativeQuery(sql).getResultList().size();
+        return total;
     }
     public Optional<User> addOneUser(String username,String password,String num,String phone,String token){
         userRepository.createOneUser(username,password,num,phone,token,username);
