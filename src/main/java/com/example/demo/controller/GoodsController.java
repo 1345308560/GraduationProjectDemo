@@ -3,7 +3,6 @@ package com.example.demo.controller;
 
 import com.example.demo.common.R;
 import com.example.demo.entity.Goods;
-import com.example.demo.entity.User;
 import com.example.demo.service.GoodsService;
 import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -67,18 +66,25 @@ public class GoodsController {
     public @ResponseBody R<List<Goods>> getAllGoods(@RequestParam Map map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
-        String query= (String) map.get("query");
+        String query= map.get("query").toString();
+        String kind=map.get("kind").toString();
         if (pagenum==null){
             pagenum=1;
         }
         if (pagesize==null){
             pagesize=10;
         }
-        if (query==null){
-            query="";
+        if(query==""){
+            // 获取总页数
+            Integer total=goodsService.countGoods();
+            log.info("query为空");
+            return R.success(goodsService.findAllGoods(pagenum,pagesize)).add("total",total);
+        }else {
+            log.info("query不为空");
+            // 获取总页数
+            Integer total = goodsService.getCertainPage(kind, query);
+            return R.success(goodsService.findCertainUsers(pagenum, pagesize, kind, query)).add("total", total);
         }
-        Integer total=goodsService.getTotalPage(query);
-        return R.success(goodsService.findAllGoods(pagenum,pagesize,query)).add("total",total);
     }
 
     @PostMapping("/add")
