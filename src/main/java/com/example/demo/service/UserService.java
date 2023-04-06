@@ -107,10 +107,19 @@ public class UserService {
 
     //修改用户信息，将原来的用户软删除，然后新建一个用户
     @Transactional
-    public Optional<User> updateUser(Integer id, String username, String password, String num, String phone, String token, String qq, String addr){
-        userRepository.deleteUser(id);
+    public Optional<User> updateUser(Integer id, String username, String password, String num,
+                                     String phone, String token, String qq, String addr){
         String uuid=java.util.UUID.randomUUID().toString();
-        userRepository.createOneUser(username,password,num,phone,token,uuid,qq,addr);
+        String sql="update user set user.username='"+username+
+                "',user.password='"+password+
+                "',user.num='"+num+
+                "',user.phone='"+phone+
+                "',user.token='"+ token+
+                "',user.qq='"+qq+
+                "',user.uuid='"+uuid+
+                "',user.addr='"+addr+
+                "' where user.id="+id;
+        Integer col = entityManager.createNativeQuery(sql).executeUpdate();
         return userRepository.findByNum(num);
     }
     // 插入num个用户

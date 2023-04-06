@@ -120,19 +120,28 @@ public class UserController {
     }
 
     @PutMapping(path = "")
-    public @ResponseBody R<Optional<User>> updateUser(@RequestBody Map<String,Object> map){
-        Integer id=(Integer)map.get("id");
+    public @ResponseBody R<Optional<User>> updateUser(@RequestParam Map<String,Object> head,@RequestBody Map map){
+        Integer id= Integer.valueOf((String) head.get("id"));
         String username=map.get("username").toString();
         String num=map.get("num").toString();
         String phone=map.get("phone").toString();
         String password=map.get("password").toString();
         String qq=map.get("qq").toString();
         String addr=map.get("addr").toString();
+        if(username =="" || num =="" || phone=="" ||password=="" || addr==""){
+            return R.error("信息不完全");
+        }
         if(userService.findByPhone(phone).isPresent()){
-            return R.error("手机号已被注册");
+            if(userService.findByPhone(phone).get().getId()!=id) {
+                return R.error("手机号已被注册");
+            }
+        }
+        if(qq==""){
+            qq=null;
         }
         String token = DigestUtils.md5DigestAsHex(num.getBytes(StandardCharsets.UTF_8));
         Optional<User>  user=userService.updateUser(id, username, password, num, phone, token, qq, addr);
+
         return R.success(user,"修改成功");
     }
 }

@@ -162,4 +162,25 @@ public class GoodsService {
         goodsRepository.insertOneGoods(goods_id,title,uid,degree,type,price_ago,price,quantity,description,img1,img2,img3,uuid);
         return goodsRepository.findByGoodsId(goods_id);
     }
+
+    @Transactional
+    public Optional<Goods> updateGoods(Integer id,String goods_id,String uid,String title,Integer quantity,
+                                       Integer type,Integer degree,BigDecimal price,BigDecimal price_ago,
+                                       String description,String img1,String img2,String img3){
+        String sql="update goods set goods.goods_id="+goods_id+
+                ",goods.title="+title+
+                ",goods.uid="+uid+
+                ",goods.degree="+degree+
+                ",goods.type="+type+
+                ",goods.price_ago="+price_ago+
+                ",goods.price="+price+
+                ",goods.quantity="+quantity+
+                ",goods.description='"+description+
+                "',goods.img1='"+img1+
+                "',goods.img2='"+img2+
+                "',goods.img3='"+img3+
+                "' where goods.id="+id;
+        Integer col = entityManager.createNativeQuery(sql).executeUpdate();
+        return goodsRepository.findByGoodsId(goods_id);
+    }
 }

@@ -63,7 +63,7 @@ public class GoodsController {
      * 下一页没有数据返回其他状态值，message：无更多数据
      */
     @GetMapping(path = "/all")
-    public @ResponseBody R<List<Goods>> getAllGoods(@RequestParam Map map){
+    public @ResponseBody R<List<Goods>> getAllGoods(@RequestParam Map<String,Object> map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
         String query= map.get("query").toString();
@@ -110,5 +110,30 @@ public class GoodsController {
         }
         Optional<Goods> newGoods=goodsService.addOneGoods(goods_id,title,uid,degree,type,price_ago,price,quantity,description,img1,img2,img3,goods_id);
         return R.success(newGoods,"添加商品成功");
+    }
+
+    @PutMapping(path = "")
+    public @ResponseBody R<Optional<Goods>> updateGoods(@RequestParam Map<String,Object> head,@RequestBody Map map){
+        Integer id= Integer.valueOf((String) head.get("id"));
+        String goods_id=map.get("goods_id").toString();
+        String uid=map.get("uid").toString();
+        String title=map.get("title").toString();
+        Integer quantity=(Integer) map.get("quantity");
+        Integer type=(Integer) map.get("type");
+        Integer degree=(Integer)map.get("degree");
+        BigDecimal price= new BigDecimal(map.get("price").toString());
+        BigDecimal price_ago=new BigDecimal(map.get("price_ago").toString());
+        String description=map.get("description").toString();
+        String img1=map.get("img1").toString();
+        String img2=map.get("img2").toString();
+        String img3=map.get("img3").toString();
+        if(goods_id=="" || uid == "" || title == ""  ){
+            return R.error("信息不完整");
+        }
+        if(!userService.findByNum(uid).isPresent()){
+            return R.error("用户不存在");
+        }
+        Optional<Goods> goods=goodsService.updateGoods(id,goods_id,uid,title,quantity,type,degree,price,price_ago,description,img1,img2,img3);
+        return R.success(goods,"商品修改成功");
     }
 }
