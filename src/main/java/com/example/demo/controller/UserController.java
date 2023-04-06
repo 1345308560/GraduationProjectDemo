@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -65,7 +66,7 @@ public class UserController {
         if (pagesize == null){
             pagesize=10;
         }
-        if(query==""){
+        if(Objects.equals(query, "")){
             // 获取总页数
             Integer total=userService.getTotalPage();
             log.info("query为空");
