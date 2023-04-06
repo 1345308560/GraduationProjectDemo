@@ -5,7 +5,10 @@ import com.example.demo.entity.Goods;
 import com.example.demo.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.sql.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -122,7 +126,6 @@ public class GoodsService {
     public List<Goods> findCertainUsers(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
         int total = getCertainPage(kind,query);
-        log.info("total:{}",total);
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空
@@ -130,13 +133,14 @@ public class GoodsService {
             return null;
         }
         pagenum=(pagenum-1)*pagesize;
-        String sql="select * from goods a join goods b " +
+        String sql="select a.* from goods a join goods b " +
                 "on a.id = b.id " +
-                "where a.display=0 and b."+kind+"="+query+
+                "where a.display=0 and b."+kind+" like '%"+query+"%'"+
                 " limit "+pagenum+" , "+pagesize;
-        log.info("sql:{}",sql);
-        List<Goods> users=entityManager.createNativeQuery(sql).getResultList();
-        return users;
+        Query query1=entityManager.createNativeQuery(sql);
+        query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        List<Goods> resultList = query1.getResultList();
+        return resultList;
     }
 
     // 查询商品的总数
@@ -145,7 +149,8 @@ public class GoodsService {
     }
 
     public int getCertainPage(String kind,String query){
-        String sql="select * from goods a join goods b on a.id = b.id where a.display=0 and b."+kind+"="+query;
+        String sql="select a.* from goods a join goods b " +
+                "on a.id = b.id where a.display=0 and b."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }

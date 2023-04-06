@@ -2,10 +2,14 @@ package com.example.demo.service;
 
 import com.example.demo.common.R;
 import com.example.demo.dao.UserRepository;
+import com.example.demo.entity.Goods;
 import com.example.demo.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.query.sql.internal.NativeQueryImpl;
+import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,14 +63,13 @@ public class UserService {
         if(pagenum > totalPage || pagenum < 1){
             return null;
         }
-        Integer query1=(pagenum-1)*pagesize;
-        return userRepository.findAllUsers(query1, pagesize);
+        pagenum=(pagenum-1)*pagesize;
+        return userRepository.findAllUsers(pagenum, pagesize);
     }
     //query不为空时，查询特定字段，使用entityManager 创建本地查询自定义sql
     public List<User> findCertainUsers(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
         int total = getCertainPage(kind,query);
-        log.info("total:{}",total);
         // 计算总页数
         int totalPage = total/pagesize + 1;
         // 如果传入参数超出页数范围，则返回空
@@ -74,21 +77,24 @@ public class UserService {
             return null;
         }
 
-        Integer query1=(pagenum-1)*pagesize;
-        String sql="select * from user a join user b " +
+        pagenum=(pagenum-1)*pagesize;
+        String sql="select a.* from user a join user b " +
                 "on a.id = b.id " +
-                "where a.display=0 and b."+kind+"="+query+
-                " limit "+query1+" , "+pagesize;
-        log.info("sql:{}",sql);
-        List<User> users=entityManager.createNativeQuery(sql).getResultList();
-        return users;
+                "where a.display=0 and b."+kind+" like '%"+query+"%'"+
+                " limit "+pagenum+" , "+pagesize;
+        Query query1=entityManager.createNativeQuery(sql);
+        query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        List<User> resultList = query1.getResultList();
+        return resultList;
     }
     // 按照query获取商品的总数
     public int getTotalPage(){
         return userRepository.countUser();
     }
     public int getCertainPage(String kind,String query){
-        String sql="select * from user a join user b on a.id = b.id where a.display=0 and b."+kind+"="+query;
+        String sql="select a.* from user a join user b " +
+                "on a.id = b.id " +
+                "where a.display=0 and b."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }
