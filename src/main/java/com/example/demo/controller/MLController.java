@@ -18,4 +18,13 @@ public class MLController {
         RestTemplate restTemplate = new RestTemplate();
         return restTemplate.getForObject(url, String.class);
     }
+    @GetMapping(path="/predict_if")
+    public @ResponseBody String predict_if(String input_str) {
+
+        // 向http://ml:5000/predict发送input_str
+        // 发送get请求，并返回返回值
+        String url = "http://127.0.0.1:5000/predict_if?input_str=" + input_str;
+        RestTemplate restTemplate = new RestTemplate();
+        return restTemplate.getForObject(url, String.class);
+    }
 }
