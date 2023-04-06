@@ -100,14 +100,16 @@ public class UserService {
         return total;
     }
     public Optional<User> addOneUser(String username, String password, String num, String phone, String qq, String addr,String token){
-        userRepository.createOneUser(username,password,num,phone,token,username,qq,addr);
+        String uuid=java.util.UUID.randomUUID().toString();
+        userRepository.createOneUser(username,password,num,phone,token,uuid,qq,addr);
         return userRepository.findByNum(num);
     }
 
     //修改用户信息，将原来的用户软删除，然后新建一个用户
     @Transactional
-    public Optional<User> updateUser(Integer id, String username, String password, String num, String phone, String token, String uuid, String qq, String addr){
+    public Optional<User> updateUser(Integer id, String username, String password, String num, String phone, String token, String qq, String addr){
         userRepository.deleteUser(id);
+        String uuid=java.util.UUID.randomUUID().toString();
         userRepository.createOneUser(username,password,num,phone,token,uuid,qq,addr);
         return userRepository.findByNum(num);
     }

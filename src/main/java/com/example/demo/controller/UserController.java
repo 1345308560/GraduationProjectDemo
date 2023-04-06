@@ -132,8 +132,7 @@ public class UserController {
             return R.error("手机号已被注册");
         }
         String token = DigestUtils.md5DigestAsHex(num.getBytes(StandardCharsets.UTF_8));
-        String uuid=username;
-        Optional<User>  user=userService.updateUser(id, username, password, num, phone, token, uuid, qq, addr);
+        Optional<User>  user=userService.updateUser(id, username, password, num, phone, token, qq, addr);
         return R.success(user,"修改成功");
     }
 }
