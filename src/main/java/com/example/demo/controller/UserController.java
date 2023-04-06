@@ -58,7 +58,7 @@ public class UserController {
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
         String query= map.get("query").toString();
-        String kind=map.get("kind").toString();
+        String kind= map.get("kind").toString();
         if (pagenum == null){
             pagenum=1;
         }
@@ -84,6 +84,8 @@ public class UserController {
         String num=map.get("num").toString();
         String phone=map.get("phone").toString();
         String password=map.get("password").toString();
+        String qq=map.get("qq").toString();
+        String addr=map.get("addr").toString();
 
         if(userService.findByPhone(phone).isPresent()){
             return R.error("手机号已被注册");
@@ -94,9 +96,12 @@ public class UserController {
         if(userService.findByUsername(username).isPresent()){
             return R.error("用户名已被注册");
         }
+        if(qq==""){
+            qq=null;
+        }
         String token = DigestUtils.md5DigestAsHex(num.getBytes(StandardCharsets.UTF_8));
         log.info("token:{}",token);
-        Optional<User> newUser=userService.addOneUser(username,password,num,phone,token);
+        Optional<User> newUser=userService.addOneUser(username,password,num,phone,qq,addr,token);
 
         return R.success(newUser);
     }
@@ -111,6 +116,24 @@ public class UserController {
         int num= Integer.parseInt((String) map.get("num"));
         userService.addUsers(num);
         return Integer.toString(num);
+    }
+
+    @PutMapping(path = "")
+    public @ResponseBody R<Optional<User>> updateUser(@RequestBody Map<String,Object> map){
+        Integer id=(Integer)map.get("id");
+        String username=map.get("username").toString();
+        String num=map.get("num").toString();
+        String phone=map.get("phone").toString();
+        String password=map.get("password").toString();
+        String qq=map.get("qq").toString();
+        String addr=map.get("addr").toString();
+        if(userService.findByPhone(phone).isPresent()){
+            return R.error("手机号已被注册");
+        }
+        String token = DigestUtils.md5DigestAsHex(num.getBytes(StandardCharsets.UTF_8));
+        String uuid=username;
+        Optional<User>  user=userService.updateUser(id, username, password, num, phone, token, uuid, qq, addr);
+        return R.success(user,"修改成功");
     }
 }
 

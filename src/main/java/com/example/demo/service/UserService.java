@@ -54,6 +54,7 @@ public class UserService {
         return userRepository.recoverUser(userId);
     }
 
+
     public List<User> findAllUsers(Integer pagenum, Integer pagesize) {
         // 获取商品的总数
         int total = getTotalPage();
@@ -98,8 +99,16 @@ public class UserService {
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }
-    public Optional<User> addOneUser(String username,String password,String num,String phone,String token){
-        userRepository.createOneUser(username,password,num,phone,token,username);
+    public Optional<User> addOneUser(String username, String password, String num, String phone, String qq, String addr,String token){
+        userRepository.createOneUser(username,password,num,phone,token,username,qq,addr);
+        return userRepository.findByNum(num);
+    }
+
+    //修改用户信息，将原来的用户软删除，然后新建一个用户
+    @Transactional
+    public Optional<User> updateUser(Integer id, String username, String password, String num, String phone, String token, String uuid, String qq, String addr){
+        userRepository.deleteUser(id);
+        userRepository.createOneUser(username,password,num,phone,token,uuid,qq,addr);
         return userRepository.findByNum(num);
     }
     // 插入num个用户
