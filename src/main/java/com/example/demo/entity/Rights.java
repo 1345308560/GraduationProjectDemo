@@ -16,6 +16,7 @@ public class Rights {
     private String uid;
 
     private Integer rights_buy;
+    //1是有权限 0是没权限
 
     private Integer rights_sell;
 

@@ -106,12 +106,12 @@ public class UserService {
     public Optional<User> addOneUser(String username, String password, String num, String phone, String qq, String addr,String token){
         String uuid=java.util.UUID.randomUUID().toString();
         userRepository.createOneUser(username,password,num,phone,token,uuid,qq,addr);
-        //新增用户的同时，为其添加用户权限表 
+        //新增用户的同时，为其添加用户权限表
         rightsRepository.createOneUserRights(num,0,0);
         return userRepository.findByNum(num);
     }
 
-    //修改用户信息，将原来的用户软删除，然后新建一个用户
+    //修改用户信息，使用update
     @Transactional
     public Optional<User> updateUser(Integer id, String username, String password, String num,
                                      String phone, String token, String qq, String addr){
@@ -128,6 +128,28 @@ public class UserService {
         Integer col = entityManager.createNativeQuery(sql).executeUpdate();
         return userRepository.findByNum(num);
     }
+
+    @Transactional
+    public int updateRights_buy1(String uid){
+        Integer res=rightsRepository.updateRights_buy1(uid);
+        return res;
+    }
+    @Transactional
+    public int updateRights_buy0(String uid){
+        Integer res=rightsRepository.updateRights_buy0(uid);
+        return res;
+    }
+    @Transactional
+    public int updateRights_sell1(String uid){
+        Integer res=rightsRepository.updateRights_sell1(uid);
+        return res;
+    }
+    @Transactional
+    public int updateRights_sell0(String uid){
+        Integer res=rightsRepository.updateRights_sell0(uid);
+        return res;
+    }
+
     // 插入num个用户
     public void addUsers(int num){
         for(int i = 0; i < num; i++){

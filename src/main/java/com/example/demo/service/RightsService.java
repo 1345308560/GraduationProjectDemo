@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.RightsRepository;
+import com.example.demo.entity.Rights;
 import com.example.demo.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class RightsService {
@@ -23,6 +25,8 @@ public class RightsService {
 
     @Autowired
     EntityManager entityManager;
+
+    public Optional<Rights> findByUid(String uid){ return rightsRepository.findByUid(uid); }
 
     public List<Map<String,Object>>  findAllUsersRights(Integer pagenum, Integer pagesize) {
         // 获取商品的总数

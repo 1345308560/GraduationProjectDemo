@@ -2,8 +2,12 @@ package com.example.demo.controller;
 
 import com.example.demo.common.R;
 import com.example.demo.entity.User;
+import com.example.demo.service.RightsService;
 import com.example.demo.service.UserService;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.DigestUtils;
@@ -20,16 +24,16 @@ import java.util.Optional;
 @RequestMapping(path="/user")
 public class UserController {
     // Set方法注入
-    private UserService userService;
     @Autowired
-    public void setUserService(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
+
+    @Autowired
+    private RightsService rightsService;
 
 
     @PutMapping(path = "/delete")
-    public @ResponseBody R deleteUser(@RequestBody Map map){
-        Integer userId= (Integer) map.get("id");
+    public @ResponseBody R deleteUser(@RequestParam Map<String,Object> head){
+        Integer userId= Integer.valueOf((String) head.get("id"));
         userService.deleteUser(userId);
         if(!userService.findById(userId).isPresent()){
             return R.error("用户删除失败");
@@ -145,5 +149,51 @@ public class UserController {
 
         return R.success(user,"修改成功");
     }
+
+    @PutMapping(path = "/buy_power/**")
+    public @ResponseBody R updateBuyRights(ServletRequest servletRequest){
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String url=request.getRequestURI();
+        log.info("{}",url);
+        String id_= StringUtils.substringBetween(url,"buy_power/","/state");
+        String type_ = StringUtils.substringAfter(url,"state/");
+        Integer id= Integer.valueOf(id_);
+        Boolean type= Boolean.valueOf(type_);
+        String uid=userService.findById(id).get().getNum();
+        if(type==true){
+            userService.updateRights_buy1(uid);
+            return R.success(null,"修改成功");
+        }
+        if(type==false){
+            userService.updateRights_buy0(uid);
+            return R.success(null,"修改成功");
+        }
+
+        return R.error("error");
+    }
+
+    @PutMapping(path = "/sale_power/**")
+    public @ResponseBody R updateSellRights(ServletRequest servletRequest){
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String url=request.getRequestURI();
+        log.info("{}",url);
+        String id_= StringUtils.substringBetween(url,"sale_power/","/state");
+        String type_ = StringUtils.substringAfter(url,"state/");
+        Integer id= Integer.valueOf(id_);
+        Boolean type= Boolean.valueOf(type_);
+        String uid=userService.findById(id).get().getNum();
+        Integer status=rightsService.findByUid(uid).get().getRights_sell();
+        if(type==true){
+            userService.updateRights_sell1(uid);
+            return R.success(null,"修改成功");
+        }
+        if(type==false){
+            userService.updateRights_sell0(uid);
+            return R.success(null,"修改成功");
+        }
+
+        return R.error("error");
+    }
+
 }
 

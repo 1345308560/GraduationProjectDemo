@@ -49,6 +49,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
+        <dependency>
+            <!--        字符串截取-->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
         <!--ES依赖 Start-->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
