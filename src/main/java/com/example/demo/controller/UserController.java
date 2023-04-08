@@ -104,6 +104,7 @@ public class UserController {
         log.info("token:{}",token);
         Optional<User> newUser=userService.addOneUser(username,password,num,phone,qq,addr,token);
 
+
         return R.success(newUser);
     }
     /**

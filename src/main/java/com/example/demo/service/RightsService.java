@@ -58,4 +58,9 @@ public class RightsService {
         List<Map<String,Object>> resultList = query1.getResultList();
         return resultList;
     }
+
+    public void createOneUserRights(String num,Integer rights_buy,Integer rights_sell){
+        rightsRepository.createOneUserRights(num,rights_buy,rights_sell);
+        return;
+    }
 }

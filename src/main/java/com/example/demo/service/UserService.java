@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.common.R;
+import com.example.demo.dao.RightsRepository;
 import com.example.demo.dao.UserRepository;
 import com.example.demo.entity.Goods;
 import com.example.demo.entity.User;
@@ -29,6 +30,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RightsRepository rightsRepository;
 
     public  Iterable<User> findAll() {
         return userRepository.findAll();
@@ -102,6 +106,8 @@ public class UserService {
     public Optional<User> addOneUser(String username, String password, String num, String phone, String qq, String addr,String token){
         String uuid=java.util.UUID.randomUUID().toString();
         userRepository.createOneUser(username,password,num,phone,token,uuid,qq,addr);
+        //新增用户的同时，为其添加用户权限表 
+        rightsRepository.createOneUserRights(num,0,0);
         return userRepository.findByNum(num);
     }
 
