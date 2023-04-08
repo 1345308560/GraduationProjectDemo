@@ -52,7 +52,8 @@ public class LoginCheckFilter implements Filter {
                 "/ml/**",              // 机器学习接口，测试使用，正式上线时需要删除
                 "/user/**",             // 开放user接口，测试使用，正式上线时需要删除
                 "/goods/**",            // 开放goods接口，测试使用，正式上线时需要删除
-                "/admin/create"         // 开放admin接口，测试使用，正式上线时需要删除
+                "/admin/create",         // 开放admin接口，测试使用，正式上线时需要删除
+                "/power/**"         // 开放admin接口，测试使用，正式上线时需要删除
         };
 
         //2、判断本次请求是否需要处理
