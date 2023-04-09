@@ -5,9 +5,12 @@ import com.example.demo.dao.AdminRepository;
 import java.time.Instant;
 import java.util.Random;
 import com.example.demo.entity.Admin;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import java.util.Date;
@@ -17,6 +20,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class AdminService {
+
+    @PersistenceContext
+    EntityManager entityManager;
+
     @Autowired
     private AdminRepository adminRepository;
 
@@ -79,4 +86,14 @@ public class AdminService {
         return admin;
     }
 
+    @Transactional
+    public Optional<Admin> updateAdmin(Integer id, String username, String password, String num, String phone) {
+        String sql="update admin set admin.username='"+username+
+                "',admin.password='"+password+
+                "',admin.num='"+num+
+                "',admin.phone='"+phone+
+                "' where admin.id="+id;
+        Integer col = entityManager.createNativeQuery(sql).executeUpdate();
+        return adminRepository.findByNum(num);
+    }
 }
