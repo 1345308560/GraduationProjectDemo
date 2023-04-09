@@ -6,6 +6,7 @@ import com.example.demo.service.RightsService;
 import com.example.demo.service.UserService;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -193,6 +198,43 @@ public class UserController {
         }
 
         return R.error("error");
+    }
+
+    //读取图片
+    @GetMapping("/loadimg/**")
+
+    public void getIcon(HttpServletResponse response, ServletRequest servletRequest) {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String requestURI=request.getRequestURI();
+        String img = StringUtils.substringAfter(requestURI,"loadimg/");
+        String imgPath="/usr/img/icon/";
+        String url = imgPath+img;
+        log.info("{}",url);
+        File file = new File(url);//imgPath为服务器图片地址
+
+        if(file.exists() && file.isFile()){
+            FileInputStream fis = null;
+            OutputStream os = null;
+            try {
+                fis = new FileInputStream(file);
+                os = response.getOutputStream();
+                int count = 0;
+                byte[] buffer = new byte[1024 * 8];
+                while ((count = fis.read(buffer)) != -1) {
+                    os.write(buffer, 0, count);
+                    os.flush();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    fis.close();
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 }
