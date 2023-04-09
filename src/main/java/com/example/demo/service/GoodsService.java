@@ -109,7 +109,7 @@ public class GoodsService {
     }
 
 
-    public List<Goods> findAllGoods(Integer pagenum, Integer pagesize) {
+    public List<Map<String,Object>> findAllGoods(Integer pagenum, Integer pagesize) {
         // 获取商品的总数
         int total = countGoods();
         // 计算总页数
@@ -123,7 +123,7 @@ public class GoodsService {
         return goodsRepository.findAllGoods(pagenum, pagesize);
     }
     //query不为空时，查询特定字段，使用entityManager 创建本地查询自定义sql
-    public List<Goods> findCertainUsers(Integer pagenum, Integer pagesize, String kind, String query) {
+    public List<Map<String,Object>> findCertainUsers(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
         int total = getCertainPage(kind,query);
         // 计算总页数
@@ -139,7 +139,7 @@ public class GoodsService {
                 " limit "+pagenum+" , "+pagesize;
         Query query1=entityManager.createNativeQuery(sql);
         query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        List<Goods> resultList = query1.getResultList();
+        List<Map<String,Object>> resultList = query1.getResultList();
         return resultList;
     }
 
@@ -149,8 +149,8 @@ public class GoodsService {
     }
 
     public int getCertainPage(String kind,String query){
-        String sql="select a.* from goods a join goods b " +
-                "on a.id = b.id where a.display=0 and b."+kind+" like '%"+query+"%'";
+        String sql="select g.*,u.username  from goods g join user u " +
+                "on g.uid = u.num where g.display=0 and g."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }

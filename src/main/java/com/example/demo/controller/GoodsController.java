@@ -63,7 +63,7 @@ public class GoodsController {
      * 下一页没有数据返回其他状态值，message：无更多数据
      */
     @GetMapping(path = "/all")
-    public @ResponseBody R<List<Goods>> getAllGoods(@RequestParam Map<String,Object> map){
+    public @ResponseBody R<List<Map<String,Object>>> getAllGoods(@RequestParam Map<String,Object> map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
         String query= map.get("query").toString();

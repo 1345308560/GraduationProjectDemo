@@ -9,6 +9,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface GoodsRepository extends CrudRepository<Goods, Integer> {
@@ -42,8 +43,8 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
     @Query(value="select count(*) from goods where goods.display = 0" ,nativeQuery=true)
     int countGoods();
     // 分页查询
-    @Query(value="select * from goods where goods.display = 0 limit ?1, ?2" ,nativeQuery=true)
-    List<Goods> findAllGoods(Integer pagenum, Integer pagesize);
+    @Query(value="select g.*,u.username from goods g join user u on u.num=g.uid where g.display = 0 limit ?1, ?2" ,nativeQuery=true)
+    List<Map<String,Object>> findAllGoods(Integer pagenum, Integer pagesize);
 
     /**
      * 插入一条Goods
