@@ -107,8 +107,9 @@ public class UserService {
         String uuid=java.util.UUID.randomUUID().toString();
         userRepository.createOneUser(username,password,num,phone,token,uuid,qq,addr);
         //新增用户的同时，为其添加用户权限表
-        rightsRepository.createOneUserRights(num,0,0);
-        return userRepository.findByNum(num);
+        Integer uid = userRepository.findByNum(num).get().getId();
+        rightsRepository.createOneUserRights(uid,1,1);
+        return userRepository.findById(uid);
     }
 
     //修改用户信息，使用update
@@ -130,22 +131,22 @@ public class UserService {
     }
 
     @Transactional
-    public int updateRights_buy1(String uid){
+    public int updateRights_buy1(Integer uid){
         Integer res=rightsRepository.updateRights_buy1(uid);
         return res;
     }
     @Transactional
-    public int updateRights_buy0(String uid){
+    public int updateRights_buy0(Integer uid){
         Integer res=rightsRepository.updateRights_buy0(uid);
         return res;
     }
     @Transactional
-    public int updateRights_sell1(String uid){
+    public int updateRights_sell1(Integer uid){
         Integer res=rightsRepository.updateRights_sell1(uid);
         return res;
     }
     @Transactional
-    public int updateRights_sell0(String uid){
+    public int updateRights_sell0(Integer uid){
         Integer res=rightsRepository.updateRights_sell0(uid);
         return res;
     }

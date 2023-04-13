@@ -160,11 +160,10 @@ public class UserController {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String url=request.getRequestURI();
         log.info("{}",url);
-        String id_= StringUtils.substringBetween(url,"buy_power/","/state");
+        String id= StringUtils.substringBetween(url,"buy_power/","/state");
         String type_ = StringUtils.substringAfter(url,"state/");
-        Integer id= Integer.valueOf(id_);
+        Integer uid= Integer.valueOf(id);
         Boolean type= Boolean.valueOf(type_);
-        String uid=userService.findById(id).get().getNum();
         if(type==true){
             userService.updateRights_buy1(uid);
             return R.success(null,"修改成功");
@@ -182,12 +181,10 @@ public class UserController {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String url=request.getRequestURI();
         log.info("{}",url);
-        String id_= StringUtils.substringBetween(url,"sale_power/","/state");
+        String id= StringUtils.substringBetween(url,"sale_power/","/state");
         String type_ = StringUtils.substringAfter(url,"state/");
-        Integer id= Integer.valueOf(id_);
+        Integer uid= Integer.valueOf(id);
         Boolean type= Boolean.valueOf(type_);
-        String uid=userService.findById(id).get().getNum();
-        Integer status=rightsService.findByUid(uid).get().getRights_sell();
         if(type==true){
             userService.updateRights_sell1(uid);
             return R.success(null,"修改成功");
