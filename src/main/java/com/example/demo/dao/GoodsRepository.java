@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import com.example.demo.entity.Goods;
 import jakarta.transaction.Transactional;
+import org.apache.ibatis.annotations.Mapper;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -35,7 +36,7 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
     @Modifying
     @Transactional
     @Query(value="insert into goods(goods_id, uuid, title, uid, degree, type, price_ago, price, quantity, description, img1, img2, img3, create_at, update_at, display) values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)" ,nativeQuery=true)
-    public int insertGoods(String goods_id, String uuid, String title, String uid,
+    public int insertGoods(String goods_id, String uuid, String title, Integer uid,
                            Integer degree, Integer type, BigDecimal price_ago, BigDecimal price,
                            Integer quantity, String description, String img1, String img2,
                            String img3, Date create_at, Date update_at, Integer display);
@@ -43,7 +44,7 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
     @Query(value="select count(*) from goods where goods.display = 0" ,nativeQuery=true)
     int countGoods();
     // 分页查询
-    @Query(value="select g.*,u.username from goods g join user u on u.num=g.uid where g.display = 0 limit ?1, ?2" ,nativeQuery=true)
+    @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid where g.display = 0 limit ?1, ?2" ,nativeQuery=true)
     List<Map<String,Object>> findAllGoods(Integer pagenum, Integer pagesize);
 
     /**
@@ -52,9 +53,13 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
     @Modifying
     @Transactional
     @Query(value="insert into goods(goods_id, title, uid, degree, type, price_ago, price, quantity, description, img1, img2, img3, uuid) values(?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)" ,nativeQuery=true)
-    public int insertOneGoods(String goods_id, String title, String uid,
+    public int insertOneGoods(String goods_id, String title, Integer uid,
                            Integer degree, Integer type, BigDecimal price_ago, BigDecimal price,
                            Integer quantity, String description, String img1, String img2,
                            String img3, String uuid);
 
+
+    //通过goodsId查询title
+    @Query(value = "select title from goods where goods.goods_id=?1" ,nativeQuery=true)
+    String findGoodsTitle(String goods_id);
 }

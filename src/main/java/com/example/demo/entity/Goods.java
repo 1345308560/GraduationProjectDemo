@@ -20,7 +20,7 @@ public class Goods {
     // 商品标题
     private String title;
     // 卖家id
-    private String uid;
+    private Integer uid;
     // 新旧程度
     private Integer degree;
     // 商品类型
@@ -78,12 +78,16 @@ public class Goods {
         this.title = title;
     }
 
-    public String getUid() {
+    public void setUid(Integer uid) {
+        this.uid = uid;
+    }
+
+    public Integer getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setDisplay(Integer display) {
+        this.display = display;
     }
 
     public Integer getDegree() {

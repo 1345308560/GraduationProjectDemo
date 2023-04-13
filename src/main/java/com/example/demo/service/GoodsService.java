@@ -78,7 +78,7 @@ public class GoodsService {
                 "猕猴桃", "火龙果", "榴莲", "龙眼", "荔枝"};
         int randomIndex = (int)(Math.random()*20);
         good.setTitle(goods[randomIndex]);
-        good.setUid("1131190256");
+        good.setUid(1);
         good.setDegree((int)(Math.random()*10)+1);
         int randomIndex3 = (int)(Math.random()*20);
         good.setType(randomIndex3);
@@ -123,7 +123,7 @@ public class GoodsService {
         return goodsRepository.findAllGoods(pagenum, pagesize);
     }
     //query不为空时，查询特定字段，使用entityManager 创建本地查询自定义sql
-    public List<Map<String,Object>> findCertainUsers(Integer pagenum, Integer pagesize, String kind, String query) {
+    public List<Map<String,Object>> findCertainGoods(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
         int total = getCertainPage(kind,query);
         // 计算总页数
@@ -133,9 +133,9 @@ public class GoodsService {
             return null;
         }
         pagenum=(pagenum-1)*pagesize;
-        String sql="select a.* from goods a join goods b " +
-                "on a.id = b.id " +
-                "where a.display=0 and b."+kind+" like '%"+query+"%'"+
+        String sql="select g.*,u.username,u.num from goods g join user u " +
+                "on g.uid = u.id " +
+                "where g.display=0 and g."+kind+" like '%"+query+"%'"+
                 " limit "+pagenum+" , "+pagesize;
         Query query1=entityManager.createNativeQuery(sql);
         query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -155,7 +155,7 @@ public class GoodsService {
         return total;
     }
 
-    public Optional<Goods> addOneGoods(String goods_id, String title, String uid,
+    public Optional<Goods> addOneGoods(String goods_id, String title, Integer uid,
                                        Integer degree, Integer type, BigDecimal price_ago, BigDecimal price,
                                        Integer quantity, String description, String img1, String img2,
                                        String img3,String uuid){
@@ -164,12 +164,12 @@ public class GoodsService {
     }
 
     @Transactional
-    public Optional<Goods> updateGoods(Integer id,String goods_id,String uid,String title,Integer quantity,
+    public Optional<Goods> updateGoods(Integer id,String goods_id,Integer uid,String title,Integer quantity,
                                        Integer type,Integer degree,BigDecimal price,BigDecimal price_ago,
                                        String description,String img1,String img2,String img3){
         String sql="update goods set goods.goods_id="+goods_id+
-                ",goods.title="+title+
-                ",goods.uid="+uid+
+                ",goods.title='"+title+
+                "',goods.uid="+uid+
                 ",goods.degree="+degree+
                 ",goods.type="+type+
                 ",goods.price_ago="+price_ago+
@@ -182,5 +182,9 @@ public class GoodsService {
                 "' where goods.id="+id;
         Integer col = entityManager.createNativeQuery(sql).executeUpdate();
         return goodsRepository.findByGoodsId(goods_id);
+    }
+
+    public String findGoodsTitle(String goods_id){
+        return goodsRepository.findGoodsTitle(goods_id);
     }
 }

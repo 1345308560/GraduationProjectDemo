@@ -45,8 +45,9 @@ public class GoodsController {
     }
 
     @PutMapping(path = "/delete")
-    public @ResponseBody R<Goods> deleteGoods(@RequestBody Map map){
-        Integer goodsId= (Integer) map.get("id");
+    public @ResponseBody R<Goods> deleteGoods(@RequestParam Map<String,Object> head){
+        Integer goodsId= Integer.valueOf((String) head.get("id"));
+        log.info("{}",goodsId);
         goodsService.deleteGoods(goodsId);
         if(!goodsService.findById(goodsId).isPresent()){
             return R.error("商品删除失败");
@@ -91,31 +92,32 @@ public class GoodsController {
             log.info("query不为空");
             // 获取总页数
             Integer total = goodsService.getCertainPage(kind, query);
-            return R.success(goodsService.findCertainUsers(pagenum, pagesize, kind, query)).add("total", total);
+            return R.success(goodsService.findCertainGoods(pagenum, pagesize, kind, query)).add("total", total);
         }
     }
 
     @PostMapping("/add")
     public @ResponseBody R<Optional<Goods>> addGoods(@RequestBody Map map){
         String goods_id=map.get("goods_id").toString();
-        String uid=map.get("uid").toString();
+        String num=map.get("uid").toString();
         String title=map.get("title").toString();
-        Integer quantity=(Integer) map.get("quantity");
-        Integer type=(Integer) map.get("type");
-        Integer degree=(Integer)map.get("degree");
+        Integer quantity=Integer.valueOf(map.get("quantity").toString());
+        Integer type=Integer.valueOf(map.get("type").toString());
+        Integer degree=Integer.valueOf(map.get("degree").toString());
         BigDecimal price= new BigDecimal(map.get("price").toString());
         BigDecimal price_ago=new BigDecimal(map.get("price_ago").toString());
         String description=map.get("description").toString();
         String img1=map.get("img1").toString();
         String img2=map.get("img2").toString();
         String img3=map.get("img3").toString();
-        if(!userService.findByNum(uid).isPresent()){
+        if(!userService.findByNum(num).isPresent()){
             return R.error("用户不存在，商品添加失败");
         }
         if(goodsService.findByGoodsId(goods_id).isPresent())
         {
             return R.error("商品已存在");
         }
+        Integer uid=userService.findByNum(num).get().getId();
         Optional<Goods> newGoods=goodsService.addOneGoods(goods_id,title,uid,degree,type,price_ago,price,quantity,description,img1,img2,img3,goods_id);
         return R.success(newGoods,"添加商品成功");
     }
@@ -124,7 +126,7 @@ public class GoodsController {
     public @ResponseBody R<Optional<Goods>> updateGoods(@RequestParam Map<String,Object> head,@RequestBody Map map){
         Integer id= Integer.valueOf((String) head.get("id"));
         String goods_id=map.get("goods_id").toString();
-        String uid=map.get("uid").toString();
+        String num=map.get("uid").toString();
         String title=map.get("title").toString();
         Integer quantity=(Integer) map.get("quantity");
         Integer type=(Integer) map.get("type");
@@ -135,12 +137,13 @@ public class GoodsController {
         String img1=map.get("img1").toString();
         String img2=map.get("img2").toString();
         String img3=map.get("img3").toString();
-        if(goods_id=="" || uid == "" || title == ""  ){
+        if(goods_id=="" || num == "" || title == ""  ){
             return R.error("信息不完整");
         }
-        if(!userService.findByNum(uid).isPresent()){
+        if(!userService.findByNum(num).isPresent()){
             return R.error("用户不存在");
         }
+        Integer uid=userService.findByNum(num).get().getId();
         Optional<Goods> goods=goodsService.updateGoods(id,goods_id,uid,title,quantity,type,degree,price,price_ago,description,img1,img2,img3);
         return R.success(goods,"商品修改成功");
     }
