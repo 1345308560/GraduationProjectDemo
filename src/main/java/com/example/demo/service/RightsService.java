@@ -26,7 +26,7 @@ public class RightsService {
     @Autowired
     EntityManager entityManager;
 
-    public Optional<Rights> findByUid(String uid){ return rightsRepository.findByUid(uid); }
+    public Optional<Rights> findByUid(Integer uid){ return rightsRepository.findByUid(uid); }
 
     public List<Map<String,Object>>  findAllUsersRights(Integer pagenum, Integer pagesize) {
         // 获取商品的总数
@@ -54,7 +54,7 @@ public class RightsService {
 
         pagenum=(pagenum-1)*pagesize;
         String sql="select u.*,r.rights_buy,r.rights_sell from user u join rights r " +
-                "on u.num = r.uid " +
+                "on u.id = r.uid " +
                 "where u.display=0 and u."+kind+" like '%"+query+"%'"+
                 " limit "+pagenum+" , "+pagesize;
         Query query1=entityManager.createNativeQuery(sql);
@@ -63,8 +63,8 @@ public class RightsService {
         return resultList;
     }
 
-    public void createOneUserRights(String num,Integer rights_buy,Integer rights_sell){
-        rightsRepository.createOneUserRights(num,rights_buy,rights_sell);
+    public void createOneUserRights(Integer uid,Integer rights_buy,Integer rights_sell){
+        rightsRepository.createOneUserRights(uid,rights_buy,rights_sell);
         return;
     }
 }

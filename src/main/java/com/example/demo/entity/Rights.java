@@ -13,7 +13,7 @@ public class Rights {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Integer id;
 
-    private String uid;
+    private Integer uid;
 
     private Integer rights_buy;
     //1是有权限 0是没权限
@@ -34,11 +34,11 @@ public class Rights {
         this.id = id;
     }
 
-    public String getUid() {
+    public Integer getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public void setUid(Integer uid) {
         this.uid = uid;
     }
 
