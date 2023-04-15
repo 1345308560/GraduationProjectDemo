@@ -132,10 +132,17 @@ public class GoodsService {
         if(pagenum > totalPage || pagenum < 1){
             return null;
         }
+        String table=null;
+        if(kind.equals("username")){
+            table="u";
+        }
+        else{
+            table="g";
+        }
         pagenum=(pagenum-1)*pagesize;
         String sql="select g.*,u.username,u.num from goods g join user u " +
                 "on g.uid = u.id " +
-                "where g.display=0 and g."+kind+" like '%"+query+"%'"+
+                "where g.display=0 and "+ table+"."+kind+" like '%"+query+"%'"+
                 " limit "+pagenum+" , "+pagesize;
         Query query1=entityManager.createNativeQuery(sql);
         query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -149,8 +156,15 @@ public class GoodsService {
     }
 
     public int getCertainPage(String kind,String query){
+        String table=null;
+        if(kind.equals("username")) {
+            table="u";
+        }
+        else{
+            table="g";
+        }
         String sql="select g.*,u.username  from goods g join user u " +
-                "on g.uid = u.num where g.display=0 and g."+kind+" like '%"+query+"%'";
+                "on g.uid = u.num where g.display=0 and "+table+"."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }

@@ -53,7 +53,7 @@ public class GoodsController {
             return R.error("商品删除失败");
         }
         Goods goods=goodsService.findById(goodsId).get();
-        if (goods.getDisplay()==true){
+        if (goods.getDisplay()){
             return R.success(null,"商品删除成功");
         }
         return R.error("商品删除失败");
