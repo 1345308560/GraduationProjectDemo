@@ -54,6 +54,9 @@ public class CartsController {
             Integer size= res.size();
             for (int i=0;i<size;i++){
                 Map<String, Object> stringObjectMap = res.get(i);
+                if(stringObjectMap.get("json_value")==null){
+                    continue;
+                }
                 JSONObject details =JSONObject.parseObject(stringObjectMap.get("json_value").toString());
                 List<String> goods_id= JSON.parseArray(details.getJSONArray("goods_id").toJSONString(),String.class);
                 List<String> num= JSON.parseArray(details.getJSONArray("num").toJSONString(),String.class);
