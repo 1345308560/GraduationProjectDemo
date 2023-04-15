@@ -58,4 +58,30 @@ public class ReportController {
         return R.success(null,"举报删除成功");
 
     }
+
+    @GetMapping(path = "/total/all")
+    public @ResponseBody R<List<Map<String,Object>>> getReportsTotal(@RequestParam Map<String,Object> map){
+        Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
+        Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
+        String query= map.get("query").toString();
+        String kind=map.get("kind").toString();
+        if (pagenum==null){
+            pagenum=1;
+        }
+        if (pagesize==null){
+            pagesize=10;
+        }
+        if(query==""){
+            // 获取总页数
+            Integer total=reportService.countReportsTotal();
+            log.info("query为空");
+            return R.success(reportService.findReportsTotal(pagenum,pagesize)).add("total",total);
+        }else {
+            log.info("query不为空");
+            // 获取总页数
+            //Integer total = goodsService.getCertainPage(kind, query);
+            //return R.success(goodsService.findCertainGoods(pagenum, pagesize, kind, query)).add("total", total);
+            return R.error("?");
+        }
+    }
 }
