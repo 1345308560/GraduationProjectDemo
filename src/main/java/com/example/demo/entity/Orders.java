@@ -1,6 +1,7 @@
 package com.example.demo.entity;
 
 
+import com.alibaba.fastjson.JSONObject;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -19,6 +20,8 @@ public class Orders {
     private String orders_id;//订单编号
 
 
+    private JSONObject json_value;
+
     private BigDecimal price_count;
 
     private Integer state;//订单状态  0 未完成  1 已完成
@@ -35,8 +38,16 @@ public class Orders {
 
     private Integer display;
 
-    public Integer getDisplay() {
-        return display;
+    private  String uuid;
+
+    public Boolean getDisplay() {
+        // 返回display的Boolean值
+        return display == 1;
+    }
+
+    public void setDisplay(Boolean display) {
+        // 将Boolean值转换为Integer值
+        this.display = display ? 1 : 0;
     }
 
     public void setCreate_at(Date create_at) {
@@ -110,4 +121,19 @@ public class Orders {
         this.state = state;
     }
 
+    public JSONObject getJson_value() {
+        return json_value;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setJson_value(JSONObject json_value) {
+        this.json_value = json_value;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 }
