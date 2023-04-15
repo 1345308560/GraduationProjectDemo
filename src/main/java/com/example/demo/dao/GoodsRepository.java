@@ -62,4 +62,8 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
     //通过goodsId查询title
     @Query(value = "select title from goods where goods.goods_id=?1" ,nativeQuery=true)
     String findGoodsTitle(String goods_id);
+
+    //通过goodsId查询price
+    @Query(value = "select price from goods where goods_id=?1" ,nativeQuery=true)
+    BigDecimal findGoodsPrice(String goodsId);
 }

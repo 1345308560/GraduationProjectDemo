@@ -63,14 +63,6 @@ public class OrderService {
         return orderRepository.countOrder();
     }
 
-    public List<String> findGoodsTitle(List<String> goodsId) {
-        Integer size=goodsId.size();
-        List<String> goodsTitle =new ArrayList<>();
-        for(int i=0;i<size;i++){
-            goodsTitle.add(goodsService.findGoodsTitle(goodsId.get(i)));
-        }
-        return goodsTitle;
-    }
 
     public List<Map<String, Object>> findCertainOrders(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数

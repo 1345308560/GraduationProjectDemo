@@ -15,10 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -40,6 +37,26 @@ public class GoodsService {
 
     public Optional<Goods> findByGoodsId(String goods_id){
         return goodsRepository.findByGoodsId(goods_id);
+    }
+
+    public List<String> findGoodsTitle(List<String> goodsId) {
+        Integer size=goodsId.size();
+        List<String> goodsTitle =new ArrayList<>();
+        for(int i=0;i<size;i++){
+            goodsTitle.add(findGoodsTitle(goodsId.get(i)));
+        }
+        return goodsTitle;
+    }
+
+    public BigDecimal findGoodsPrice(List<String> goodsId) {
+        Integer size=goodsId.size();
+        BigDecimal price=new BigDecimal("0.00");
+        List<BigDecimal> prices= new ArrayList<>();
+        prices.add(price);
+        for(int i=0;i<size;i++){
+           prices.add(prices.get(i).add(findGoodsPrice(goodsId.get(i))));
+        }
+        return prices.get(size);
     }
 
     @Transactional//UPDATE 或 DELETE 操作需要使用事务，需要在定义的业务逻辑层（Service层），在方法上使用@Transactional注解管理事务。
@@ -200,5 +217,9 @@ public class GoodsService {
 
     public String findGoodsTitle(String goods_id){
         return goodsRepository.findGoodsTitle(goods_id);
+    }
+
+    public BigDecimal findGoodsPrice(String goods_id) {
+        return goodsRepository.findGoodsPrice(goods_id);
     }
 }

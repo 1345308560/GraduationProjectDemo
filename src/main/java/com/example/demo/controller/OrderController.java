@@ -6,12 +6,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.example.demo.common.R;
 import com.example.demo.entity.Goods;
 import com.example.demo.entity.Orders;
+import com.example.demo.service.GoodsService;
 import com.example.demo.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +23,9 @@ import java.util.Map;
 public class OrderController {
     @Autowired
     OrderService orderService;
+
+    @Autowired
+    GoodsService goodsService;
 
     @GetMapping(path = "/all")
     public @ResponseBody R<List<Map<String,Object>>> getAllOrder(@RequestParam Map<String,Object> map){
@@ -48,13 +53,14 @@ public class OrderController {
                 JSONObject details =JSONObject.parseObject(stringObjectMap.get("json_value").toString());
                 List<String> goods_id= JSON.parseArray(details.getJSONArray("goods_id").toJSONString(),String.class);
                 List<String> num= JSON.parseArray(details.getJSONArray("num").toJSONString(),String.class);
-                List<String> goods_title=orderService.findGoodsTitle(goods_id);
-
+                List<String> goods_title=goodsService.findGoodsTitle(goods_id);
+                BigDecimal price=goodsService.findGoodsPrice(goods_id);
                 JSONObject result = JSON.parseObject(JSON.toJSONString(stringObjectMap));
 
                 result.remove("json_value");
                 result.put("title",goods_title);
                 result.put("num",num);
+                result.put("price",price);
 //                stringObjectMap.remove("json_value");
 //                stringObjectMap.put("title",goods_title);
 //                stringObjectMap.put("num",num);
@@ -73,13 +79,14 @@ public class OrderController {
                 JSONObject details =JSONObject.parseObject(stringObjectMap.get("json_value").toString());
                 List<String> goods_id= JSON.parseArray(details.getJSONArray("goods_id").toJSONString(),String.class);
                 List<String> num= JSON.parseArray(details.getJSONArray("num").toJSONString(),String.class);
-                List<String> goods_title=orderService.findGoodsTitle(goods_id);
-
+                List<String> goods_title=goodsService.findGoodsTitle(goods_id);
+                BigDecimal price=goodsService.findGoodsPrice(goods_id);
                 JSONObject result = JSON.parseObject(JSON.toJSONString(stringObjectMap));
 
                 result.remove("json_value");
                 result.put("title",goods_title);
                 result.put("num",num);
+                result.put("price",price);
 //                stringObjectMap.remove("json_value");
 //                stringObjectMap.put("title",goods_title);
 //                stringObjectMap.put("num",num);
