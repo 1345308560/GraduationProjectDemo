@@ -74,8 +74,14 @@ public class Rights {
         this.update_at = update_at;
     }
 
-    public Integer getDisplay() {
-        return display;
+    public Boolean getDisplay() {
+        // 返回display的Boolean值
+        return display == 1;
+    }
+
+    public void setDisplay(Boolean display) {
+        // 将Boolean值转换为Integer值
+        this.display = display ? 1 : 0;
     }
 
     public void setDisplay(Integer display) {
