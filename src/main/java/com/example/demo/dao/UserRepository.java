@@ -37,6 +37,9 @@ public interface UserRepository extends CrudRepository<User, String> {
     @Query(value="select * from user where username = ?1" ,nativeQuery=true)
     Optional<User> findByUsername(String username);
 
+    @Query(value="select * from user where qq = ?1" ,nativeQuery=true)
+    Optional<Object> findByQQ(String qq);
+
     @Modifying
     @Query(value="update user set user.display = 1 where id = ?1" ,nativeQuery=true)
     int deleteUser(Integer id);//软删除，修改display即可
@@ -102,4 +105,6 @@ public interface UserRepository extends CrudRepository<User, String> {
                         String num, String phone, String qq, String addr, Integer ban,
                         String token, String icon, Date create_at, Date update_at,
                         Integer display, String uuid);
+
+
 }

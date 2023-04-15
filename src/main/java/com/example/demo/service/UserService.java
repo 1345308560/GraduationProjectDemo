@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.common.R;
+import com.example.demo.dao.CartsRepository;
 import com.example.demo.dao.RightsRepository;
 import com.example.demo.dao.UserRepository;
 import com.example.demo.entity.Goods;
@@ -32,6 +33,9 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private CartsRepository cartsRepository;
+
+    @Autowired
     private RightsRepository rightsRepository;
 
     public  Iterable<User> findAll() {
@@ -47,6 +51,8 @@ public class UserService {
     public Optional<User> findByPhone(String phone){ return userRepository.findByPhone(phone); }
 
     public Optional<User> findByNum(String num){ return userRepository.findByNum(num); }
+
+    public Optional<Object> findByQQ(String qq) { return userRepository.findByQQ(qq);}
 
     @Transactional//UPDATE 或 DELETE 操作需要使用事务，需要在定义的业务逻辑层（Service层），在方法上使用@Transactional注解管理事务。
     public int deleteUser(Integer userId){
@@ -109,6 +115,7 @@ public class UserService {
         //新增用户的同时，为其添加用户权限表
         Integer uid = userRepository.findByNum(num).get().getId();
         rightsRepository.createOneUserRights(uid,1,1);
+        cartsRepository.createOneUserCarts(uid,uuid);
         return userRepository.findById(uid);
     }
 
@@ -225,4 +232,5 @@ public class UserService {
         user.setUuid(UUID.randomUUID().toString());
         return user;
     }
+
 }

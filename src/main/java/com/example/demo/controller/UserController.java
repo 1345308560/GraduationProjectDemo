@@ -106,6 +106,9 @@ public class UserController {
         if(userService.findByUsername(username).isPresent()){
             return R.error("用户名已被注册");
         }
+        if(userService.findByQQ(qq).isPresent()){
+            return R.error("qq已被注册");
+        }
         if(qq==""){
             qq=null;
         }
