@@ -39,15 +39,11 @@ public class UserController {
     @PutMapping(path = "/delete")
     public @ResponseBody R deleteUser(@RequestParam Map<String,Object> head){
         Integer userId= Integer.valueOf((String) head.get("id"));
-        userService.deleteUser(userId);
         if(!userService.findById(userId).isPresent()){
             return R.error("用户删除失败");
         }
-        User user=userService.findById(userId).get();
-        if (user.getDisplay()){
-            return R.success(null,"用户删除成功");
-        }
-        return R.error("用户删除失败");
+        userService.deleteUser(userId);
+        return R.success(null,"用户删除成功");
     }
 
     /**

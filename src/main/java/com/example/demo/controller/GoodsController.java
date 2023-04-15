@@ -48,15 +48,11 @@ public class GoodsController {
     public @ResponseBody R<Goods> deleteGoods(@RequestParam Map<String,Object> head){
         Integer goodsId= Integer.valueOf((String) head.get("id"));
         log.info("{}",goodsId);
-        goodsService.deleteGoods(goodsId);
         if(!goodsService.findById(goodsId).isPresent()){
             return R.error("商品删除失败");
         }
-        Goods goods=goodsService.findById(goodsId).get();
-        if (goods.getDisplay()){
-            return R.success(null,"商品删除成功");
-        }
-        return R.error("商品删除失败");
+        goodsService.deleteGoods(goodsId);
+        return R.success(null,"商品删除成功");
     }
     /**
      * Get请求：
