@@ -4,6 +4,7 @@ package com.example.demo.filter;
 
 import com.example.demo.common.R;
 import com.example.demo.entity.Admin;
+import com.example.demo.entity.User;
 import com.example.demo.service.AdminService;
 import com.example.demo.service.UserService;
 import jakarta.servlet.*;
@@ -28,6 +29,10 @@ public class LoginCheckFilter implements Filter {
     @Autowired
     private AdminService adminService;
 
+    @Autowired
+    private UserService userService;
+
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
@@ -35,19 +40,19 @@ public class LoginCheckFilter implements Filter {
 
         //1、获取本次请求的URI
         String requestURI = request.getRequestURI();
-        String method=request.getMethod();
-        String authorization=request.getHeader("Authorization");
-        log.info("拦截到请求：{}",requestURI);
-        log.info("请求方法：{}",method);
-        log.info("请求头部：{}",authorization);
+        String method = request.getMethod();
+        String authorization = request.getHeader("Authorization");
+        log.info("拦截到请求：{}", requestURI);
+        log.info("请求方法：{}", method);
+        log.info("请求头部：{}", authorization);
 
         //定义不需要处理的请求路径
         String[] urls = new String[]{
                 "/admin/login",
                 "/admin/logout",
                 //"/backend/**",
-                "/front/**",
-                "/user/login",
+                //"/front/**",
+                "/user/front/login",
                 "/favicon.ico",
                 "/ml/**",              // 机器学习接口，测试使用，正式上线时需要删除
                 "/user/**",             // 开放user接口，测试使用，正式上线时需要删除
@@ -56,33 +61,51 @@ public class LoginCheckFilter implements Filter {
                 "/power/**",         // 开放admin接口，测试使用，正式上线时需要删除
                 "/orders/**"         // 开放admin接口，测试使用，正式上线时需要删除
         };
+        //定义前台的请求路径
+        String[] frontUrls = new String[]{
+                "/user/front/**",
+                "/goods/front/**",
+                "/orders/front/**",
+                "/carts/front/**"
+        };
 
         //2、判断本次请求是否需要处理
         boolean check = check(urls, requestURI);
 
         //3.1如果请求方式为options，则直接放行
-        if(method.equals("OPTIONS")){
-            log.info("本次请求{}方式为options",requestURI);
-            filterChain.doFilter(request,response);
+        if (method.equals("OPTIONS")) {
+            log.info("本次请求{}方式为options", requestURI);
+            filterChain.doFilter(request, response);
             return;
         }
         //3.2如果请求不需要处理，则直接放行
-        if(check){
-            log.info("本次请求{}不需要处理",requestURI);
-            filterChain.doFilter(request,response);
+        if (check) {
+            log.info("本次请求{}不需要处理", requestURI);
+            filterChain.doFilter(request, response);
             return;
         }
 
         //4-1、判断登录状态，如果已登录，则直接放行
-        if(authorization!= null){
-            Optional<Admin> admin=adminService.findByToken(authorization);
-            if(admin.isPresent()){
-                log.info("用户已登录，username为：{}",admin.get().getUsername());
-                filterChain.doFilter(request,response);
+        if (authorization != null) {
+            if (checkFront(frontUrls, requestURI)) {
+                Optional<User> user = userService.findByToken(authorization);
+                if (user.isPresent()) {
+                    log.info("用户已登录，username为：{}", user.get().getUsername());
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                log.info("用户不存在!");
+                return;
+            } else {
+                Optional<Admin> admin = adminService.findByToken(authorization);
+                if (admin.isPresent()) {
+                    log.info("管理员已登录，username为：{}", admin.get().getUsername());
+                    filterChain.doFilter(request, response);
+                    return;
+                }
+                log.info("管理员不存在!");
                 return;
             }
-            log.info("用户不存在!");
-            return;
         }
 
         log.info("用户未登录");
@@ -94,14 +117,25 @@ public class LoginCheckFilter implements Filter {
 
     /**
      * 路径匹配，检查本次请求是否需要放行
+     *
      * @param urls
      * @param requestURI
      * @return
      */
-    public boolean check(String[] urls,String requestURI){
+    public boolean check(String[] urls, String requestURI) {
         for (String url : urls) {
             boolean match = PATH_MATCHER.match(url, requestURI);
-            if(match){
+            if (match) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkFront(String[] urls, String requestURI) {
+        for (String url : urls) {
+            boolean match = PATH_MATCHER.match(url, requestURI);
+            if (match) {
                 return true;
             }
         }
