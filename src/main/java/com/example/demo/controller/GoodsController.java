@@ -95,7 +95,7 @@ public class GoodsController {
     @PostMapping("/add")
     public @ResponseBody R<Optional<Goods>> addGoods(@RequestBody Map map){
         String goods_id=map.get("goods_id").toString();
-        String num=map.get("uid").toString();
+        String num=map.get("num").toString();
         String title=map.get("title").toString();
         Integer quantity=Integer.valueOf(map.get("quantity").toString());
         Integer type=Integer.valueOf(map.get("type").toString());
@@ -122,13 +122,12 @@ public class GoodsController {
     public @ResponseBody R<Optional<Goods>> updateGoods(@RequestParam Map<String,Object> head,@RequestBody Map map){
         Integer id= Integer.valueOf((String) head.get("id"));
         String goods_id=map.get("goods_id").toString();
-        String num=map.get("uid").toString();
+        String num=map.get("num").toString();
         String title=map.get("title").toString();
         Integer quantity=(Integer) map.get("quantity");
-        Integer type=(Integer) map.get("type");
+        Integer type=Integer.valueOf(map.get("type").toString());
         Integer degree=(Integer)map.get("degree");
         BigDecimal price= new BigDecimal(map.get("price").toString());
-        BigDecimal price_ago=new BigDecimal(map.get("price_ago").toString());
         String description=map.get("description").toString();
         String img1=map.get("img1").toString();
         String img2=map.get("img2").toString();
@@ -140,20 +139,25 @@ public class GoodsController {
             return R.error("用户不存在");
         }
         Integer uid=userService.findByNum(num).get().getId();
+        if(map.get("price_ago")==null){
+            BigDecimal price_ago=new BigDecimal(map.get("price").toString());
+            Optional<Goods> goods=goodsService.updateGoods(id,goods_id,uid,title,quantity,type,degree,price,price_ago,description,img1,img2,img3);
+            return R.success(goods,"商品修改成功");
+        }
+        BigDecimal price_ago=new BigDecimal(map.get("price_ago").toString());
         Optional<Goods> goods=goodsService.updateGoods(id,goods_id,uid,title,quantity,type,degree,price,price_ago,description,img1,img2,img3);
         return R.success(goods,"商品修改成功");
     }
 
     //读取图片
-    @GetMapping("/loadimg/**")
+    @GetMapping("/front/loadimg/**")
 
     public void getImg2(HttpServletResponse response, ServletRequest servletRequest) {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI=request.getRequestURI();
         String img = StringUtils.substringAfter(requestURI,"loadimg/");
-        String imgPath="/usr/img/goods/";
+        String imgPath="E:/usr/img/goods/";
         String url = imgPath+img;
-        log.info("{}",url);
         File file = new File(url);//imgPath为服务器图片地址
 
         if(file.exists() && file.isFile()){
