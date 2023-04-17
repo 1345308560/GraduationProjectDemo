@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.R;
+import com.example.demo.entity.Admin;
 import com.example.demo.entity.User;
 import com.example.demo.service.RightsService;
 import com.example.demo.service.UserService;
@@ -197,13 +198,13 @@ public class UserController {
     }
 
     //读取图片
-    @GetMapping("/loadimg/**")
+    @GetMapping("/front/loadimg/**")
 
     public void getIcon(HttpServletResponse response, ServletRequest servletRequest) {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI=request.getRequestURI();
         String img = StringUtils.substringAfter(requestURI,"loadimg/");
-        String imgPath="/usr/img/icon/";
+        String imgPath="E:/usr/img/icon/";
         String url = imgPath+img;
         log.info("{}",url);
         File file = new File(url);//imgPath为服务器图片地址
@@ -232,6 +233,35 @@ public class UserController {
             }
         }
     }
+
+    //前台用户登录
+    @PostMapping (path = "/front/login")
+    public @ResponseBody R<User> login(@RequestBody Map<String,Object> map){
+        String username=map.get("username").toString();
+        String password=map.get("password").toString();
+        if(username.length()==10){
+            //如果前端发送的账号是10位  那么使用学号进行登录
+            if(userService.findByNum(username).isEmpty()){
+                return R.error("用户名或密码错误");
+            }
+            User user=userService.findByNum(username).get();
+            if(user.getPassword()!=null&&user.getPassword().equals(password)){
+                return R.success(user);
+            }
+            return R.error("用户名或密码错误");
+        }
+        //否则使用手机号进行登录
+        if(userService.findByPhone(username).isEmpty()){
+            return R.error("用户名或密码错误");
+        }
+        User user=userService.findByPhone(username).get();
+        if(user.getPassword()!=null&&user.getPassword().equals(password)){
+            return R.success(user);
+        }
+        return R.error("用户名或密码错误");
+    }
+
+
 
 }
 

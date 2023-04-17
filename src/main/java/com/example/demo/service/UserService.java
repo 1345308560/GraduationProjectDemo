@@ -233,4 +233,7 @@ public class UserService {
         return user;
     }
 
+    public Optional<User> findByToken(String token) {
+        return userRepository.findByToken(token);
+    }
 }

@@ -107,4 +107,6 @@ public interface UserRepository extends CrudRepository<User, String> {
                         Integer display, String uuid);
 
 
+    @Query(value="select * from user where token = ?1" ,nativeQuery=true)
+    Optional<User> findByToken(String token);
 }
