@@ -42,9 +42,8 @@ public class ReportController {
         }else {
             log.info("query不为空");
             // 获取总页数
-            //Integer total = goodsService.getCertainPage(kind, query);
-            //return R.success(goodsService.findCertainGoods(pagenum, pagesize, kind, query)).add("total", total);
-            return R.error("?");
+            Integer total = reportService.getCertainPage(kind, query);
+            return R.success(reportService.findCertainReports(pagenum, pagesize, kind, query)).add("total", total);
         }
     }
 
