@@ -54,19 +54,21 @@ public class OrderController {
                 List<String> goods_id= JSON.parseArray(details.getJSONArray("goods_id").toJSONString(),String.class);
                 List<String> num= JSON.parseArray(details.getJSONArray("num").toJSONString(),String.class);
                 List<String> goods_title=goodsService.findGoodsTitle(goods_id);
-                BigDecimal price=goodsService.findGoodsPrice(goods_id);
                 JSONObject result = JSON.parseObject(JSON.toJSONString(stringObjectMap));
-
+                log.info("{}",stringObjectMap.get("deal_at").toString());
+                log.info("{}",result.get("deal_at").toString());
                 result.remove("json_value");
                 result.put("title",goods_title);
                 result.put("num",num);
-                result.put("price",price);
+                result.put("deal_at",stringObjectMap.get("deal_at").toString());
+                result.put("create_at",stringObjectMap.get("create_at").toString());
 //                stringObjectMap.remove("json_value");
 //                stringObjectMap.put("title",goods_title);
 //                stringObjectMap.put("num",num);
                 res.remove(i);
                 res.add(i,result);
             }
+            log.info("2:{}",res.get(0).get("deal_at").toString());
             return R.success(res).add("total",total);
         }else {
             log.info("query不为空");
@@ -86,7 +88,8 @@ public class OrderController {
                 result.remove("json_value");
                 result.put("title",goods_title);
                 result.put("num",num);
-                result.put("price",price);
+                result.put("deal_at",stringObjectMap.get("deal_at").toString());
+                result.put("create_at",stringObjectMap.get("create_at").toString());
 //                stringObjectMap.remove("json_value");
 //                stringObjectMap.put("title",goods_title);
 //                stringObjectMap.put("num",num);

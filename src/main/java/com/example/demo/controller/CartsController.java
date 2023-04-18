@@ -68,6 +68,8 @@ public class CartsController {
                 result.put("title",goods_title);
                 result.put("num",num);
                 result.put("price",price);
+                result.put("deal_at",stringObjectMap.get("deal_at").toString());
+                result.put("create_at",stringObjectMap.get("create_at").toString());
 //                stringObjectMap.remove("json_value");
 //                stringObjectMap.put("title",goods_title);
 //                stringObjectMap.put("num",num);
@@ -95,6 +97,8 @@ public class CartsController {
                 result.put("title",goods_title);
                 result.put("num",num);
                 result.put("price",price);
+                result.put("deal_at",stringObjectMap.get("deal_at").toString());
+                result.put("create_at",stringObjectMap.get("create_at").toString());
 //                stringObjectMap.remove("json_value");
 //                stringObjectMap.put("title",goods_title);
 //                stringObjectMap.put("num",num);
