@@ -61,14 +61,15 @@ public class CartsController {
                 List<String> goods_id= JSON.parseArray(details.getJSONArray("goods_id").toJSONString(),String.class);
                 List<String> num= JSON.parseArray(details.getJSONArray("num").toJSONString(),String.class);
                 List<String> goods_title=goodsService.findGoodsTitle(goods_id);
-                BigDecimal price=goodsService.findGoodsPrice(goods_id);
+                List<BigDecimal> price=goodsService.findGoodsPrice(goods_id);
+                BigDecimal price_count=goodsService.findPriceCount(goods_id);
                 JSONObject result = JSON.parseObject(JSON.toJSONString(stringObjectMap));
-
                 result.remove("json_value");
                 result.put("title",goods_title);
                 result.put("num",num);
                 result.put("price",price);
-                result.put("deal_at",stringObjectMap.get("deal_at").toString());
+                result.put("price_count",price_count);
+                //result.put("update_at",stringObjectMap.get("update_at").toString());
                 result.put("create_at",stringObjectMap.get("create_at").toString());
 //                stringObjectMap.remove("json_value");
 //                stringObjectMap.put("title",goods_title);
@@ -90,13 +91,15 @@ public class CartsController {
                 List<String> goods_id= JSON.parseArray(details.getJSONArray("goods_id").toJSONString(),String.class);
                 List<String> num= JSON.parseArray(details.getJSONArray("num").toJSONString(),String.class);
                 List<String> goods_title=goodsService.findGoodsTitle(goods_id);
-                BigDecimal price=goodsService.findGoodsPrice(goods_id);
+                List<BigDecimal> price=goodsService.findGoodsPrice(goods_id);
+                BigDecimal price_count=goodsService.findPriceCount(goods_id);
                 JSONObject result = JSON.parseObject(JSON.toJSONString(stringObjectMap));
 
                 result.remove("json_value");
                 result.put("title",goods_title);
                 result.put("num",num);
                 result.put("price",price);
+                result.put("price_count",price_count);
                 result.put("deal_at",stringObjectMap.get("deal_at").toString());
                 result.put("create_at",stringObjectMap.get("create_at").toString());
 //                stringObjectMap.remove("json_value");

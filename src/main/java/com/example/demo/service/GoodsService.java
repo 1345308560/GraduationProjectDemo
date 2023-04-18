@@ -48,7 +48,16 @@ public class GoodsService {
         return goodsTitle;
     }
 
-    public BigDecimal findGoodsPrice(List<String> goodsId) {
+    public List<BigDecimal> findGoodsPrice(List<String> goodsId) {
+        Integer size=goodsId.size();
+        List<BigDecimal> goodsPrice =new ArrayList<>();
+        for(int i=0;i<size;i++){
+            goodsPrice.add(findGoodsPrice(goodsId.get(i)));
+        }
+        return goodsPrice;
+    }
+
+    public BigDecimal findPriceCount(List<String> goodsId) {
         Integer size=goodsId.size();
         BigDecimal price=new BigDecimal("0.00");
         List<BigDecimal> prices= new ArrayList<>();
@@ -181,7 +190,7 @@ public class GoodsService {
             table="g";
         }
         String sql="select g.*,u.username  from goods g join user u " +
-                "on g.uid = u.num where g.display=0 and "+table+"."+kind+" like '%"+query+"%'";
+                "on g.uid = u.id where g.display=0 and "+table+"."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }
