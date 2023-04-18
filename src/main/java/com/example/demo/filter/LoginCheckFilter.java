@@ -50,9 +50,8 @@ public class LoginCheckFilter implements Filter {
         String[] urls = new String[]{
                 "/admin/login",
                 "/admin/logout",
-                //"/backend/**",
-                //"/front/**",
                 "/user/front/login",
+                "/user/front/add",
                 "/favicon.ico",
                 "/ml/**",              // 机器学习接口，测试使用，正式上线时需要删除
                 "/user/**",             // 开放user接口，测试使用，正式上线时需要删除
