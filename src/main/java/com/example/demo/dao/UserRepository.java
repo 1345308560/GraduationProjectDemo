@@ -44,10 +44,14 @@ public interface UserRepository extends CrudRepository<User, String> {
     @Query(value="update user set user.display = 1 where id = ?1" ,nativeQuery=true)
     int deleteUser(Integer id);//软删除，修改display即可
 
-    @Modifying
-    @Query(value="update user set user.display = 0 where id = ?1" ,nativeQuery=true)
-    int recoverUser(Integer id);//恢复删除
 
+    @Modifying
+    @Query(value="update user set user.ban = 1 where id = ?1" ,nativeQuery=true)
+    int banUser(Integer id);//软删除，修改ban即可
+
+    @Modifying
+    @Query(value="update user set user.ban = 0 where id = ?1" ,nativeQuery=true)
+    int recoverUser(Integer id);//恢复ban
 
     // 查询总条数
     @Query(value="select count(*) from user where user.display = 0" ,nativeQuery=true)

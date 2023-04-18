@@ -60,6 +60,11 @@ public class UserService {
     }
 
     @Transactional//UPDATE 或 DELETE 操作需要使用事务，需要在定义的业务逻辑层（Service层），在方法上使用@Transactional注解管理事务。
+    public int banUser(Integer userId){
+        return userRepository.banUser(userId);
+    }
+
+    @Transactional//UPDATE 或 DELETE 操作需要使用事务，需要在定义的业务逻辑层（Service层），在方法上使用@Transactional注解管理事务。
     public int recoverUser(Integer userId){
         return userRepository.recoverUser(userId);
     }
@@ -122,13 +127,12 @@ public class UserService {
     //修改用户信息，使用update
     @Transactional
     public Optional<User> updateUser(Integer id, String username, String password, String num,
-                                     String phone, String token, String qq, String addr){
+                                     String phone, String qq, String addr){
         String uuid=java.util.UUID.randomUUID().toString();
         String sql="update user set user.username='"+username+
                 "',user.password='"+password+
                 "',user.num='"+num+
                 "',user.phone='"+phone+
-                "',user.token='"+ token+
                 "',user.qq='"+qq+
                 "',user.uuid='"+uuid+
                 "',user.addr='"+addr+

@@ -86,7 +86,7 @@ public class UserController {
     }
 
     @PostMapping(path = "/add")
-    public @ResponseBody R<Optional<User>> addUser(@RequestBody Map map){
+        public @ResponseBody R<Optional<User>> addUser(@RequestBody Map map){
         String username=map.get("username").toString();
         String num=map.get("num").toString();
         String phone=map.get("phone").toString();
@@ -138,19 +138,15 @@ public class UserController {
         String password=map.get("password").toString();
         String qq=map.get("qq").toString();
         String addr=map.get("addr").toString();
-        if(username =="" || num =="" || phone=="" ||password=="" || addr==""){
+        if(username =="" || num =="" || phone=="" ||password=="" || addr=="" || qq==""){
             return R.error("信息不完全");
         }
         if(userService.findByPhone(phone).isPresent()){
-            if(userService.findByPhone(phone).get().getId()!=id) {
+            if(!userService.findByPhone(phone).get().getId().equals(id)){
                 return R.error("手机号已被注册");
             }
         }
-        if(qq==""){
-            qq=null;
-        }
-        String token = DigestUtils.md5DigestAsHex(num.getBytes(StandardCharsets.UTF_8));
-        Optional<User>  user=userService.updateUser(id, username, password, num, phone, token, qq, addr);
+        Optional<User>  user=userService.updateUser(id, username, password, num, phone, qq, addr);
 
         return R.success(user,"修改成功");
     }
@@ -198,8 +194,7 @@ public class UserController {
     }
 
     //读取图片
-    @GetMapping("/front/loadimg/**")
-
+    @GetMapping(path = "/front/loadimg/**")
     public void getIcon(HttpServletResponse response, ServletRequest servletRequest) {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI=request.getRequestURI();
@@ -234,6 +229,29 @@ public class UserController {
         }
     }
 
+
+    @PutMapping(path = "/ban_power/**")
+    public @ResponseBody R banUser(ServletRequest servletRequest){
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String url=request.getRequestURI();
+        log.info("{}",url);
+        //http://localhost:8080/user/ban_power/402/state/true
+        String id= StringUtils.substringBetween(url,"ban_power/","/state");
+        String type_ = StringUtils.substringAfter(url,"state/");
+        Integer uid= Integer.valueOf(id);
+        Boolean type= Boolean.valueOf(type_);
+        if(type==true){
+            userService.banUser(uid);
+            return R.success(null,"修改成功");
+        }
+        if(type==false){
+            userService.recoverUser(uid);
+            return R.success(null,"修改成功");
+        }
+
+        return R.error("error");
+    }
+
     //前台用户登录
     @PostMapping (path = "/front/login")
     public @ResponseBody R<User> login(@RequestBody Map<String,Object> map){
@@ -259,6 +277,70 @@ public class UserController {
             return R.success(user);
         }
         return R.error("用户名或密码错误");
+    }
+
+    //用户注册
+    @PostMapping(path = "/front/add")
+    public @ResponseBody R<Optional<User>> userRegist(@RequestBody Map map){
+        String username=map.get("username").toString();
+        String num=map.get("num").toString();
+        String phone=map.get("phone").toString();
+        String password=map.get("password").toString();
+        String qq=map.get("qq").toString();
+        String addr=map.get("addr").toString();
+        if(username =="" || num =="" || phone=="" ||password=="" || addr=="" || qq==""){
+            return R.error("信息不完全");
+        }
+        if(userService.findByPhone(phone).isPresent()){
+            return R.error("手机号已被注册");
+        }
+        if(userService.findByNum(num).isPresent()){
+            return R.error("学号已被注册");
+        }
+        if(userService.findByUsername(username).isPresent()){
+            return R.error("用户名已被注册");
+        }
+        if(userService.findByQQ(qq).isPresent()){
+            return R.error("qq已被注册");
+        }
+        String token = DigestUtils.md5DigestAsHex(num.getBytes(StandardCharsets.UTF_8));
+        log.info("token:{}",token);
+        Optional<User> newUser=userService.addOneUser(username,password,num,phone,qq,addr,token);
+
+
+        return R.success(newUser);
+    }
+
+    //用户个人信息
+    @GetMapping(path="/front/message")
+    public @ResponseBody R<Optional<User>> userMessage(ServletRequest servletRequest){
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String authorization=request.getHeader("Authorization");
+        Optional<User> user=userService.findByToken(authorization);
+        return R.success(user);
+    }
+
+    //用户修改个人信息
+    @PutMapping(path = "/front/changeSelf")
+    public @ResponseBody R<Optional<User>> updateUserSelf(@RequestParam Map<String,Object> head, @RequestBody Map map){
+        Integer id= Integer.valueOf((String) head.get("id"));
+        String username=map.get("username").toString();
+        String num=map.get("num").toString();
+        String phone=map.get("phone").toString();
+        String password=map.get("password").toString();
+        String qq=map.get("qq").toString();
+        String addr=map.get("addr").toString();
+        if(username =="" || num =="" || phone=="" ||password=="" || addr=="" || qq==""){
+            return R.error("信息不完全");
+        }
+        if(userService.findByPhone(phone).isPresent()){
+            if(!userService.findByPhone(phone).get().getId().equals(id)) {
+                return R.error("手机号已被注册");
+            }
+        }
+        Optional<User>  user=userService.updateUser(id, username, password, num, phone, qq, addr);
+
+        return R.success(user,"修改成功");
     }
 
 
