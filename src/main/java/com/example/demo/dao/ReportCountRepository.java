@@ -13,7 +13,7 @@ public interface ReportCountRepository extends CrudRepository<Report_count, Stri
     int countReportsTotal();
 
 
-    @Query(value="select rc.*,u.username,u.phone,u.num " +
+    @Query(value="select rc.*,u.username,u.phone,u.num,u.ban " +
             "from report_count rc join user u on rc.uid=u.id " +
             "where rc.display = 0 limit ?1, ?2" ,nativeQuery=true)
     List<Map<String, Object>> findReportsTotal(Integer pagenum, Integer pagesize);
