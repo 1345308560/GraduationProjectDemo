@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dao.PostRepository;
+import com.example.demo.entity.Post;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -8,9 +9,11 @@ import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -78,5 +81,14 @@ public class PostService {
         query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List<Map<String,Object>> resultList = query1.getResultList();
         return resultList;
+    }
+
+    public Optional<Post> findById(Integer postId) {
+        return postRepository.findById(postId);
+    }
+
+    @Transactional//UPDATE 或 DELETE 操作需要使用事务，需要在定义的业务逻辑层（Service层），在方法上使用@Transactional注解管理事务。
+    public int deletePosts(Integer postId) {
+        return postRepository.deletePost(postId);
     }
 }
