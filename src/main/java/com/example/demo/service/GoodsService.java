@@ -1,5 +1,8 @@
 package com.example.demo.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.example.demo.common.R;
 import com.example.demo.dao.GoodsRepository;
 import com.example.demo.entity.Goods;
 import com.example.demo.entity.User;
@@ -148,6 +151,37 @@ public class GoodsService {
         pagenum=(pagenum-1)*pagesize;
         return goodsRepository.findAllGoods(pagenum, pagesize);
     }
+
+    public List<Map<String,Object>> findAllWantGoods(Integer pagenum, Integer pagesize) {
+        // 获取商品的总数
+        int total = countWantGoods();
+        // 计算总页数
+        int totalPage = total/pagesize + 1;
+        // 如果传入参数超出页数范围，则返回空
+        if(pagenum > totalPage || pagenum < 1){
+            return null;
+        }
+        // 计算偏移量
+        pagenum=(pagenum-1)*pagesize;
+        List<Map<String,Object>> res=goodsRepository.findAllWantGoods(pagenum, pagesize);
+        //把负数修正为正数
+        Integer size= res.size();
+
+        for (int i=0;i<size;i++){
+            Map<String, Object> stringObjectMap = res.get(i);
+            Integer num=Integer.valueOf(stringObjectMap.get("quantity").toString());
+            JSONObject result = JSON.parseObject(JSON.toJSONString(stringObjectMap));
+
+            result.remove("json_value");
+            result.remove("quantity");
+            result.put("quantity",-num);
+
+            res.remove(i);
+            res.add(i,result);
+        }
+        return res;
+    }
+
     //query不为空时，查询特定字段，使用entityManager 创建本地查询自定义sql
     public List<Map<String,Object>> findCertainGoods(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
@@ -168,7 +202,8 @@ public class GoodsService {
         pagenum=(pagenum-1)*pagesize;
         String sql="select g.*,u.username,u.num from goods g join user u " +
                 "on g.uid = u.id " +
-                "where g.display=0 and "+ table+"."+kind+" like '%"+query+"%'"+
+                "where g.display=0 and g.quantity>0 " +
+                "and "+ table+"."+kind+" like '%"+query+"%'"+
                 " limit "+pagenum+" , "+pagesize;
         Query query1=entityManager.createNativeQuery(sql);
         query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
@@ -176,9 +211,55 @@ public class GoodsService {
         return resultList;
     }
 
+    public List<Map<String,Object>> findCertainWantGoods(Integer pagenum, Integer pagesize, String kind, String query) {
+        // 获取商品的总数
+        int total = getCertainWantPage(kind,query);
+        // 计算总页数
+        int totalPage = total/pagesize + 1;
+        // 如果传入参数超出页数范围，则返回空
+        if(pagenum > totalPage || pagenum < 1){
+            return null;
+        }
+        String table=null;
+        if(kind.equals("username")){
+            table="u";
+        }
+        else{
+            table="g";
+        }
+        pagenum=(pagenum-1)*pagesize;
+        String sql="select g.*,u.username,u.num from goods g join user u " +
+                "on g.uid = u.id " +
+                "where g.display=0 and g.quantity<0 " +
+                "and "+ table+"."+kind+" like '%"+query+"%'"+
+                " limit "+pagenum+" , "+pagesize;
+        Query query1=entityManager.createNativeQuery(sql);
+        query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        List<Map<String,Object>> res = query1.getResultList();
+        Integer size= res.size();
+
+        for (int i=0;i<size;i++){
+            Map<String, Object> stringObjectMap = res.get(i);
+            Integer num=Integer.valueOf(stringObjectMap.get("quantity").toString());
+            JSONObject result = JSON.parseObject(JSON.toJSONString(stringObjectMap));
+
+            result.remove("json_value");
+            result.remove("quantity");
+            result.put("quantity",-num);
+
+            res.remove(i);
+            res.add(i,result);
+        }
+        return res;
+    }
+
     // 查询商品的总数
     public int countGoods(){
         return goodsRepository.countGoods();
+    }
+
+    public int countWantGoods(){
+        return goodsRepository.countWantGoods();
     }
 
     public int getCertainPage(String kind,String query){
@@ -190,7 +271,21 @@ public class GoodsService {
             table="g";
         }
         String sql="select g.*,u.username  from goods g join user u " +
-                "on g.uid = u.id where g.display=0 and "+table+"."+kind+" like '%"+query+"%'";
+                "on g.uid = u.id where g.display=0 and g.quantity>0 and "+table+"."+kind+" like '%"+query+"%'";
+        Integer total= entityManager.createNativeQuery(sql).getResultList().size();
+        return total;
+    }
+
+    public int getCertainWantPage(String kind,String query){
+        String table=null;
+        if(kind.equals("username")) {
+            table="u";
+        }
+        else{
+            table="g";
+        }
+        String sql="select g.*,u.username  from goods g join user u " +
+                "on g.uid = u.id where g.display=0 and g.quantity<0 and "+table+"."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }

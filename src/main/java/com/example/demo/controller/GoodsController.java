@@ -92,6 +92,7 @@ public class GoodsController {
         }
     }
 
+
     @PostMapping("/add")
     public @ResponseBody R<Optional<Goods>> addGoods(@RequestBody Map map){
         String goods_id=map.get("goods_id").toString();
@@ -149,6 +150,89 @@ public class GoodsController {
         return R.success(goods,"商品修改成功");
     }
 
+
+    //求购
+    @GetMapping(path = "/wantgoods/all")
+    public @ResponseBody R<List<Map<String,Object>>> getAllWantGoods(@RequestParam Map<String,Object> map){
+        Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
+        Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
+        String query= map.get("query").toString();
+        String kind=map.get("kind").toString();
+        if (pagenum==null){
+            pagenum=1;
+        }
+        if (pagesize==null){
+            pagesize=10;
+        }
+        if(query==""){
+            // 获取总页数
+            Integer total=goodsService.countWantGoods();
+            log.info("query为空");
+            return R.success(goodsService.findAllWantGoods(pagenum,pagesize)).add("total",total);
+        }else {
+            log.info("query不为空");
+            // 获取总页数
+            Integer total = goodsService.getCertainWantPage(kind, query);
+            return R.success(goodsService.findCertainWantGoods(pagenum, pagesize, kind, query)).add("total", total);
+        }
+    }
+
+    @PostMapping("/wantgoods/add")
+    public @ResponseBody R<Optional<Goods>> addWantGoods(@RequestBody Map map){
+        String goods_id=map.get("goods_id").toString();
+        String num=map.get("num").toString();
+        String title=map.get("title").toString();
+        Integer quantity=-Integer.valueOf(map.get("quantity").toString());
+        Integer type=Integer.valueOf(map.get("type").toString());
+        Integer degree=Integer.valueOf(map.get("degree").toString());
+        BigDecimal price= new BigDecimal(map.get("price").toString());
+        BigDecimal price_ago=new BigDecimal(map.get("price_ago").toString());
+        String description=map.get("description").toString();
+        String img1=map.get("img1").toString();
+        String img2=map.get("img2").toString();
+        String img3=map.get("img3").toString();
+        if(!userService.findByNum(num).isPresent()){
+            return R.error("用户不存在，商品添加失败");
+        }
+        if(goodsService.findByGoodsId(goods_id).isPresent())
+        {
+            return R.error("商品已存在");
+        }
+        Integer uid=userService.findByNum(num).get().getId();
+        Optional<Goods> newGoods=goodsService.addOneGoods(goods_id,title,uid,degree,type,price_ago,price,quantity,description,img1,img2,img3,goods_id);
+        return R.success(newGoods,"添加商品成功");
+    }
+
+    @PutMapping(path = "/wantgoods")
+    public @ResponseBody R<Optional<Goods>> updateWantGoods(@RequestParam Map<String,Object> head,@RequestBody Map map){
+        Integer id= Integer.valueOf((String) head.get("id"));
+        String goods_id=map.get("goods_id").toString();
+        String num=map.get("num").toString();
+        String title=map.get("title").toString();
+        Integer quantity=-(Integer) map.get("quantity");
+        Integer type=Integer.valueOf(map.get("type").toString());
+        Integer degree=(Integer)map.get("degree");
+        BigDecimal price= new BigDecimal(map.get("price").toString());
+        String description=map.get("description").toString();
+        String img1=map.get("img1").toString();
+        String img2=map.get("img2").toString();
+        String img3=map.get("img3").toString();
+        if(goods_id=="" || num == "" || title == ""  ){
+            return R.error("信息不完整");
+        }
+        if(!userService.findByNum(num).isPresent()){
+            return R.error("用户不存在");
+        }
+        Integer uid=userService.findByNum(num).get().getId();
+        if(map.get("price_ago")==null){
+            BigDecimal price_ago=new BigDecimal(map.get("price").toString());
+            Optional<Goods> goods=goodsService.updateGoods(id,goods_id,uid,title,quantity,type,degree,price,price_ago,description,img1,img2,img3);
+            return R.success(goods,"商品修改成功");
+        }
+        BigDecimal price_ago=new BigDecimal(map.get("price_ago").toString());
+        Optional<Goods> goods=goodsService.updateGoods(id,goods_id,uid,title,quantity,type,degree,price,price_ago,description,img1,img2,img3);
+        return R.success(goods,"商品修改成功");
+    }
     //读取图片
     @GetMapping("/front/loadimg/**")
 
