@@ -343,6 +343,17 @@ public class UserController {
         return R.success(user,"修改成功");
     }
 
+    @PutMapping(path = "/front/changeSelfIcon")
+    public @ResponseBody R updateUserIcon(ServletRequest servletRequest, @RequestBody Map map){
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String authorization=request.getHeader("Authorization");
+        Optional<User> user=userService.findByToken(authorization);
+        String userIcon=map.get("icon").toString();
+        Integer id=user.get().getId();
+        int res=userService.updateUserIcon(id,userIcon);
+
+        return R.success(res,"修改成功");
+    }
 
 
 }

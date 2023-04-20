@@ -113,4 +113,9 @@ public interface UserRepository extends CrudRepository<User, String> {
 
     @Query(value="select * from user where token = ?1" ,nativeQuery=true)
     Optional<User> findByToken(String token);
+
+
+    @Modifying
+    @Query(value="update user set icon = ?2 where id = ?1" ,nativeQuery=true)
+    int updateUserIcon(Integer id, String userIcon);
 }

@@ -240,4 +240,9 @@ public class UserService {
     public Optional<User> findByToken(String token) {
         return userRepository.findByToken(token);
     }
+
+    @Transactional
+    public int updateUserIcon(Integer id, String userIcon) {
+        return userRepository.updateUserIcon(id,userIcon);
+    }
 }
