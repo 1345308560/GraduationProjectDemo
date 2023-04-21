@@ -3,6 +3,7 @@ package com.example.demo.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.example.demo.common.BaseContext;
 import com.example.demo.common.R;
 import com.example.demo.service.CartsService;
 import com.example.demo.service.GoodsService;
@@ -10,10 +11,7 @@ import com.example.demo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -110,5 +108,18 @@ public class CartsController {
             }
             return R.success(res).add("total",total);
         }
+    }
+
+    @PostMapping(path = "/front/add")
+    public @ResponseBody R addToCarts(@RequestBody Map map){
+        String goodsId=map.get("goodsId").toString();
+        Integer num=Integer.valueOf(map.get("num").toString());
+        Integer userId= BaseContext.getCurrentId();
+
+        int res=cartsService.addToCart(userId,goodsId,num);
+        if(res>0){
+            return R.success(null,"添加成功");
+        }
+        return R.error("添加失败");
     }
 }

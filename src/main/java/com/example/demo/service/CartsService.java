@@ -1,17 +1,22 @@
 package com.example.demo.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.example.demo.dao.CartsRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.query.sql.internal.NativeQueryImpl;
 import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class CartsService {
 
@@ -61,5 +66,50 @@ public class CartsService {
         query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         List<Map<String,Object>> resultList = query1.getResultList();
         return resultList;
+    }
+
+    public int addToCart(Integer userId, String goodsId, Integer num) {
+        String json_value=findUserCarts(userId);
+        JSONObject goods =JSONObject.parseObject(json_value);
+        List<String> goods_id= JSON.parseArray(goods.getJSONArray("goods_id").toJSONString(),String.class);
+        List<String> quantity= JSON.parseArray(goods.getJSONArray("num").toJSONString(),String.class);
+        int res=isExist(goods_id,goodsId);
+        if(res!=-1){
+            //购物车中存在该商品，在之前的数量上加上新增数量
+            Integer number=num+Integer.valueOf(quantity.get(res).toString());
+            quantity.remove(res);
+            quantity.add(res,number.toString());
+            goods.remove("num");
+            goods.put("num",quantity);
+
+        }else{
+            //购物车中不存在该商品，新增该商品和对应数量
+            goods_id.add(goodsId);
+            goods.remove("goods_id");
+            goods.put("goods_id",goods_id);
+            quantity.add(num.toString());
+            goods.remove("num");
+            goods.put("num",quantity);
+        }
+        return updateGoods(userId,goods.toString());
+    }
+
+    private int updateGoods(Integer userId, String goods) {
+        return cartsRepository.updateGoods(userId,goods);
+    }
+
+    public String findUserCarts(Integer userId){
+        return cartsRepository.findUserCarts(userId);
+    }
+
+    public int isExist(List<String> goods_id,String goodsId){
+        int size= goods_id.size();
+        for (int id=0;id<size;id++){
+            boolean match=goods_id.get(id).equals(goodsId);
+            if(match){
+                return id;
+            }
+        }
+        return -1;
     }
 }

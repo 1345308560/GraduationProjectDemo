@@ -1,5 +1,6 @@
 package com.example.demo.dao;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.demo.entity.Carts;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.Modifying;
@@ -22,4 +23,12 @@ public interface CartsRepository extends CrudRepository<Carts, String> {
     @Query(value = "insert into carts (uid,uuid) " +
             "values (?1,?2)", nativeQuery = true)
     void createOneUserCarts(Integer uid,String uuid);
+
+    @Query(value="select json_value from carts where uid=?1 " ,nativeQuery=true)
+    String findUserCarts(Integer userId);
+
+    @Transactional
+    @Modifying
+    @Query(value="update carts set json_value = ?2 where uid = ?1" ,nativeQuery=true)
+    int updateGoods(Integer userId, String goods);
 }
