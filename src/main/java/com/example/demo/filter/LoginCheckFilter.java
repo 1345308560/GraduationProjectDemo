@@ -2,6 +2,7 @@ package com.example.demo.filter;
 
 //import com.alibaba.fastjson.JSON;
 
+import com.example.demo.common.BaseContext;
 import com.example.demo.common.R;
 import com.example.demo.entity.Admin;
 import com.example.demo.entity.User;
@@ -89,7 +90,10 @@ public class LoginCheckFilter implements Filter {
             if (checkFront(frontUrls, requestURI)) {
                 Optional<User> user = userService.findByToken(authorization);
                 if (user.isPresent()) {
-                    log.info("用户已登录，username为：{}", user.get().getUsername());
+                    Integer userId=user.get().getId();
+                    log.info("用户已登录，userId为：{}", userId);
+                    BaseContext.setCurrentId(userId);
+
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -98,7 +102,10 @@ public class LoginCheckFilter implements Filter {
             } else {
                 Optional<Admin> admin = adminService.findByToken(authorization);
                 if (admin.isPresent()) {
-                    log.info("管理员已登录，username为：{}", admin.get().getUsername());
+                    Integer adminId=admin.get().getId();
+                    log.info("管理员已登录，adminId为：{}", adminId);
+                    BaseContext.setCurrentId(adminId);
+
                     filterChain.doFilter(request, response);
                     return;
                 }
