@@ -22,6 +22,9 @@ public interface AdminRepository extends CrudRepository<Admin, String>{
     @Override
     @Query(value="select * from admin where id = ?1" ,nativeQuery=true)
     Optional<Admin> findById(String id);
+
+    @Query(value="select * from admin where id = ?1" ,nativeQuery=true)
+    Optional<Admin> findById(Integer id);
     /**
      * 插入一条Admin
      */

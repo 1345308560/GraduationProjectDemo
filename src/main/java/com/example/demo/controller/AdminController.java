@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.common.BaseContext;
 import com.example.demo.common.R;
 import com.example.demo.entity.Admin;
 import com.example.demo.entity.User;
@@ -60,10 +61,10 @@ public class AdminController {
     }
 
     @GetMapping(path="/message")
-    public @ResponseBody R<Optional<Admin>> adminMessage(ServletRequest servletRequest){
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String authorization=request.getHeader("Authorization");
-        Optional<Admin> admin=adminService.findByToken(authorization);
+    public @ResponseBody R<Optional<Admin>> adminMessage(){
+        Integer adminId= BaseContext.getCurrentId();
+        Optional<Admin> admin=adminService.findById(adminId);
+
         return R.success(admin);
     }
 

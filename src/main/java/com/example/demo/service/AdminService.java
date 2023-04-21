@@ -49,6 +49,10 @@ public class AdminService {
         return adminRepository.findById(id);
     }
 
+    public Optional<Admin> findById(Integer id) {
+        return adminRepository.findById(id);
+    }
+
     public Optional<Admin> findByPhone(String phone) { return adminRepository.findByPhone(phone); }
 
     public Optional<Admin> findByNum(String num) {
