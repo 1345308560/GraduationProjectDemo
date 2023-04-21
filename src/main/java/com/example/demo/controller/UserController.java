@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.common.BaseContext;
 import com.example.demo.common.R;
 import com.example.demo.entity.Admin;
 import com.example.demo.entity.User;
@@ -314,16 +315,15 @@ public class UserController {
     //用户个人信息
     @GetMapping(path="/front/message")
     public @ResponseBody R<Optional<User>> userMessage(ServletRequest servletRequest){
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String authorization=request.getHeader("Authorization");
-        Optional<User> user=userService.findByToken(authorization);
+        Integer userId= BaseContext.getCurrentId();
+        Optional<User> user=userService.findById(userId);
         return R.success(user);
     }
 
     //用户修改个人信息
     @PutMapping(path = "/front/changeSelf")
-    public @ResponseBody R<Optional<User>> updateUserSelf(@RequestParam Map<String,Object> head, @RequestBody Map map){
-        Integer id= Integer.valueOf((String) head.get("id"));
+    public @ResponseBody R<Optional<User>> updateUserSelf( @RequestBody Map map){
+        Integer id= BaseContext.getCurrentId();
         String username=map.get("username").toString();
         String num=map.get("num").toString();
         String phone=map.get("phone").toString();
@@ -344,13 +344,10 @@ public class UserController {
     }
 
     @PutMapping(path = "/front/changeSelfIcon")
-    public @ResponseBody R updateUserIcon(ServletRequest servletRequest, @RequestBody Map map){
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String authorization=request.getHeader("Authorization");
-        Optional<User> user=userService.findByToken(authorization);
+    public @ResponseBody R updateUserIcon(@RequestBody Map map){
+        Integer userId=BaseContext.getCurrentId();
         String userIcon=map.get("icon").toString();
-        Integer id=user.get().getId();
-        int res=userService.updateUserIcon(id,userIcon);
+        int res=userService.updateUserIcon(userId,userIcon);
 
         return R.success(res,"修改成功");
     }
