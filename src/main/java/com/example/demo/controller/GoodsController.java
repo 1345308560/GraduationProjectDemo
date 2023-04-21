@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 
+import com.example.demo.common.BaseContext;
 import com.example.demo.common.R;
 import com.example.demo.entity.Goods;
 import com.example.demo.service.GoodsService;
@@ -33,6 +34,7 @@ public class GoodsController {
     @Autowired
     private UserService userService;
 
+    //后台管理界面
     @GetMapping(path="/allGoods")
     public @ResponseBody Iterable<Goods> getAllAdmins() {
         // This returns a JSON or XML with the goods
@@ -233,9 +235,62 @@ public class GoodsController {
         Optional<Goods> goods=goodsService.updateGoods(id,goods_id,uid,title,quantity,type,degree,price,price_ago,description,img1,img2,img3);
         return R.success(goods,"商品修改成功");
     }
+
+    //前台用户
+    @GetMapping(path = "/front/self")
+    public @ResponseBody R<List<Map<String,Object>>> getAllGoodsUser(@RequestParam Map<String,Object> map){
+        Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
+        Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
+        String query= map.get("query").toString();
+        String kind=map.get("kind").toString();
+        if (pagenum==null){
+            pagenum=1;
+        }
+        if (pagesize==null){
+            pagesize=10;
+        }
+        Integer userId= BaseContext.getCurrentId();
+        if(query==""){
+            // 获取总页数
+            Integer total=goodsService.countUserGoods(userId);
+            log.info("query为空");
+            return R.success(goodsService.findUserAllGoods(userId,pagenum,pagesize)).add("total",total);
+        }else {
+            log.info("query不为空");
+            // 获取总页数
+            Integer total = goodsService.getUserCertainPage(userId,kind, query);
+            return R.success(goodsService.findUserCertainGoods(userId,pagenum, pagesize, kind, query)).add("total", total);
+        }
+    }
+
+    @GetMapping(path = "/front/all")
+    public @ResponseBody R<List<Map<String,Object>>> getAllGoodsFront(@RequestParam Map<String,Object> map){
+        Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
+        Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
+        String query= map.get("query").toString();
+        String kind=map.get("kind").toString();
+        if (pagenum==null){
+            pagenum=1;
+        }
+        if (pagesize==null){
+            pagesize=10;
+        }
+        if(query==""){
+            // 获取总页数
+            Integer total=goodsService.countGoods();
+            log.info("query为空");
+            return R.success(goodsService.findAllGoods(pagenum,pagesize)).add("total",total);
+        }else {
+            log.info("query不为空");
+            // 获取总页数
+            Integer total = goodsService.getCertainPage(kind, query);
+            return R.success(goodsService.findCertainGoods(pagenum, pagesize, kind, query)).add("total", total);
+        }
+    }
+
+
     //读取图片
     @GetMapping("/front/loadimg/**")
-
     public void getImg2(HttpServletResponse response, ServletRequest servletRequest) {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI=request.getRequestURI();

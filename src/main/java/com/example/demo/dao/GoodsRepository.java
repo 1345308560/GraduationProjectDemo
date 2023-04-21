@@ -46,12 +46,19 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
 
     @Query(value="select count(*) from goods where goods.display = 0 and goods.quantity < 0" ,nativeQuery=true)
     int countWantGoods();
+
+    @Query(value="select count(*) from goods where goods.display = 0 and goods.quantity > 0 and goods.uid=?1" ,nativeQuery=true)
+    int countUserGoods(Integer userId);
     // 分页查询
     @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid where g.display = 0 and g.quantity > 0 limit ?1, ?2" ,nativeQuery=true)
     List<Map<String,Object>> findAllGoods(Integer pagenum, Integer pagesize);
 
     @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid where g.display = 0 and g.quantity < 0 limit ?1, ?2" ,nativeQuery=true)
     List<Map<String,Object>> findAllWantGoods(Integer pagenum, Integer pagesize);
+
+    @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid " +
+            "where g.display = 0 and g.quantity > 0 and g.uid=?1 limit ?2, ?3" ,nativeQuery=true)
+    List<Map<String,Object>> findUserAllGoods(Integer userId, Integer pagenum, Integer pagesize);
     /**
      * 插入一条Goods
      */

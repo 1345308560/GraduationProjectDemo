@@ -182,6 +182,20 @@ public class GoodsService {
         return res;
     }
 
+    public List<Map<String,Object>> findUserAllGoods(Integer userId, Integer pagenum, Integer pagesize) {
+        // 获取商品的总数
+        int total = countUserGoods(userId);
+        // 计算总页数
+        int totalPage = total/pagesize + 1;
+        // 如果传入参数超出页数范围，则返回空
+        if(pagenum > totalPage || pagenum < 1){
+            return null;
+        }
+        // 计算偏移量
+        pagenum=(pagenum-1)*pagesize;
+        return goodsRepository.findUserAllGoods(userId, pagenum, pagesize);
+    }
+
     //query不为空时，查询特定字段，使用entityManager 创建本地查询自定义sql
     public List<Map<String,Object>> findCertainGoods(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
@@ -253,6 +267,35 @@ public class GoodsService {
         return res;
     }
 
+    public List<Map<String,Object>> findUserCertainGoods(Integer userId, Integer pagenum, Integer pagesize, String kind, String query) {
+        // 获取商品的总数
+        int total = getUserCertainPage(userId,kind,query);
+        // 计算总页数
+        int totalPage = total/pagesize + 1;
+        // 如果传入参数超出页数范围，则返回空
+        if(pagenum > totalPage || pagenum < 1){
+            return null;
+        }
+        String table=null;
+        if(kind.equals("username")){
+            table="u";
+        }
+        else{
+            table="g";
+        }
+        pagenum=(pagenum-1)*pagesize;
+        String sql="select g.*,u.username,u.num from goods g join user u " +
+                "on g.uid = u.id " +
+                "where g.display=0 and g.quantity>0 " +
+                "and "+ table+"."+kind+" like '%"+query+"%'" +
+                " and g.uid="+userId+
+                " limit "+pagenum+" , "+pagesize;
+        Query query1=entityManager.createNativeQuery(sql);
+        query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+        List<Map<String,Object>> resultList = query1.getResultList();
+        return resultList;
+    }
+
     // 查询商品的总数
     public int countGoods(){
         return goodsRepository.countGoods();
@@ -260,6 +303,10 @@ public class GoodsService {
 
     public int countWantGoods(){
         return goodsRepository.countWantGoods();
+    }
+
+    public int countUserGoods(Integer userId){
+        return goodsRepository.countUserGoods(userId);
     }
 
     public int getCertainPage(String kind,String query){
@@ -272,6 +319,22 @@ public class GoodsService {
         }
         String sql="select g.*,u.username  from goods g join user u " +
                 "on g.uid = u.id where g.display=0 and g.quantity>0 and "+table+"."+kind+" like '%"+query+"%'";
+        Integer total= entityManager.createNativeQuery(sql).getResultList().size();
+        return total;
+    }
+
+    public int getUserCertainPage(Integer userId, String kind,String query){
+        String table=null;
+        if(kind.equals("username")) {
+            table="u";
+        }
+        else{
+            table="g";
+        }
+        String sql="select g.*,u.username  from goods g join user u " +
+                "on g.uid = u.id where g.display=0 and g.quantity>0 " +
+                "and g.uid=" +userId+
+                " and "+table+"."+kind+" like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }
