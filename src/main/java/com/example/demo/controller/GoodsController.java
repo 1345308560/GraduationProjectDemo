@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 
 import com.example.demo.common.BaseContext;
+import com.example.demo.common.FileUtil;
 import com.example.demo.common.R;
 import com.example.demo.entity.Goods;
 import com.example.demo.service.GoodsService;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +25,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Controller
@@ -190,9 +193,9 @@ public class GoodsController {
         BigDecimal price= new BigDecimal(map.get("price").toString());
         BigDecimal price_ago=new BigDecimal(map.get("price_ago").toString());
         String description=map.get("description").toString();
-        String img1=map.get("img1").toString();
-        String img2=map.get("img2").toString();
-        String img3=map.get("img3").toString();
+        String img1=null;
+        String img2=null;
+        String img3=null;
         if(!userService.findByNum(num).isPresent()){
             return R.error("用户不存在，商品添加失败");
         }
@@ -216,9 +219,9 @@ public class GoodsController {
         Integer degree=(Integer)map.get("degree");
         BigDecimal price= new BigDecimal(map.get("price").toString());
         String description=map.get("description").toString();
-        String img1=map.get("img1").toString();
-        String img2=map.get("img2").toString();
-        String img3=map.get("img3").toString();
+        String img1=null;
+        String img2=null;
+        String img3=null;
         if(goods_id=="" || num == "" || title == ""  ){
             return R.error("信息不完整");
         }
@@ -241,6 +244,7 @@ public class GoodsController {
     public @ResponseBody R<List<Map<String,Object>>> getAllGoodsUser(@RequestParam Map<String,Object> map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
+        Integer type= Integer.valueOf((String) map.get("type"));
         String query= map.get("query").toString();
         String kind=map.get("kind").toString();
         if (pagenum==null){
@@ -251,15 +255,27 @@ public class GoodsController {
         }
         Integer userId= BaseContext.getCurrentId();
         if(query==""){
+            if(type==0){
+                // 获取总页数
+                Integer total=goodsService.countUserGoods(userId);
+                log.info("query为空");
+                return R.success(goodsService.findUserAllGoods(userId,pagenum,pagesize)).add("total",total);
+            }
             // 获取总页数
-            Integer total=goodsService.countUserGoods(userId);
+            Integer total=goodsService.countUserGoods(type,userId);
             log.info("query为空");
-            return R.success(goodsService.findUserAllGoods(userId,pagenum,pagesize)).add("total",total);
+            return R.success(goodsService.findUserAllGoods(type,userId,pagenum,pagesize)).add("total",total);
         }else {
+            if(type==0){
+                log.info("query不为空");
+                // 获取总页数
+                Integer total = goodsService.getUserCertainPage(userId,kind, query);
+                return R.success(goodsService.findUserCertainGoods(userId,pagenum, pagesize, kind, query)).add("total", total);
+            }
             log.info("query不为空");
             // 获取总页数
-            Integer total = goodsService.getUserCertainPage(userId,kind, query);
-            return R.success(goodsService.findUserCertainGoods(userId,pagenum, pagesize, kind, query)).add("total", total);
+            Integer total = goodsService.getUserCertainPage(type,userId,kind, query);
+            return R.success(goodsService.findUserCertainGoods(type,userId,pagenum, pagesize, kind, query)).add("total", total);
         }
     }
 
@@ -267,6 +283,7 @@ public class GoodsController {
     public @ResponseBody R<List<Map<String,Object>>> getAllGoodsFront(@RequestParam Map<String,Object> map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
+        Integer type= Integer.valueOf((String) map.get("type"));
         String query= map.get("query").toString();
         String kind=map.get("kind").toString();
         if (pagenum==null){
@@ -276,15 +293,26 @@ public class GoodsController {
             pagesize=10;
         }
         if(query==""){
+            if(type==0){
+                Integer total=goodsService.countGoods();
+                log.info("query为空");
+                return R.success(goodsService.findAllGoods(pagenum,pagesize)).add("total",total);
+            }
             // 获取总页数
-            Integer total=goodsService.countGoods();
+            Integer total=goodsService.countGoods(type);
             log.info("query为空");
-            return R.success(goodsService.findAllGoods(pagenum,pagesize)).add("total",total);
+            return R.success(goodsService.findAllGoods(type,pagenum,pagesize)).add("total",total);
         }else {
+            if(type==0){
+                log.info("query不为空");
+                // 获取总页数
+                Integer total = goodsService.getCertainPage(kind, query);
+                return R.success(goodsService.findCertainGoods(pagenum, pagesize, kind, query)).add("total", total);
+            }
             log.info("query不为空");
             // 获取总页数
-            Integer total = goodsService.getCertainPage(kind, query);
-            return R.success(goodsService.findCertainGoods(pagenum, pagesize, kind, query)).add("total", total);
+            Integer total = goodsService.getCertainPage(type,kind, query);
+            return R.success(goodsService.findCertainGoods(type,pagenum, pagesize, kind, query)).add("total", total);
         }
     }
 
@@ -295,7 +323,8 @@ public class GoodsController {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String requestURI=request.getRequestURI();
         String img = StringUtils.substringAfter(requestURI,"loadimg/");
-        String imgPath="E:/usr/img/goods/";
+        //String imgPath="E:/usr/img/goods/";
+        String imgPath="/usr/img/goods/";
         String url = imgPath+img;
         File file = new File(url);//imgPath为服务器图片地址
 
@@ -321,6 +350,24 @@ public class GoodsController {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    @PostMapping("/front/upload/**")
+    public @ResponseBody String uploadImg(@RequestParam("file") MultipartFile file, @RequestParam Map map) {
+        String fileName = UUID.randomUUID().toString()+".jpg";
+        Integer goodsId=Integer.valueOf(map.get("goods_id").toString());
+        String loc=map.get("loc").toString();
+        goodsService.uploadimg(goodsId,loc,fileName);
+        log.info("{}",fileName);
+        //设置文件上传路径
+        //String filePath ="E:/usr/img/goods/";
+        String filePath ="/usr/img/goods/";
+        try {
+            FileUtil.uploadFile(file.getBytes(), filePath, fileName);
+            return "上传成功";
+        } catch (Exception e) {
+            return "上传失败";
         }
     }
 }

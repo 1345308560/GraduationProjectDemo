@@ -44,14 +44,26 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
     @Query(value="select count(*) from goods where goods.display = 0 and goods.quantity > 0" ,nativeQuery=true)
     int countGoods();
 
+    @Query(value="select count(*) from goods where goods.display = 0 and goods.quantity > 0 and goods.type=?1" ,nativeQuery=true)
+    int countGoods(Integer type);
+
     @Query(value="select count(*) from goods where goods.display = 0 and goods.quantity < 0" ,nativeQuery=true)
     int countWantGoods();
 
     @Query(value="select count(*) from goods where goods.display = 0 and goods.quantity > 0 and goods.uid=?1" ,nativeQuery=true)
     int countUserGoods(Integer userId);
+
+    @Query(value="select count(*) from goods where goods.display = 0 and goods.quantity > 0 " +
+            "and goods.uid=?2 " +
+            "and goods.type=?1 " ,nativeQuery=true)
+    int countUserGoods(Integer type,Integer userId);
     // 分页查询
-    @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid where g.display = 0 and g.quantity > 0 limit ?1, ?2" ,nativeQuery=true)
+    @Query(value="select g.*,u.username,u.num,u.icon from goods g join user u on u.id=g.uid where g.display = 0 and g.quantity > 0 limit ?1, ?2" ,nativeQuery=true)
     List<Map<String,Object>> findAllGoods(Integer pagenum, Integer pagesize);
+
+    @Query(value="select g.*,u.username,u.num,u.icon from goods g join user u on u.id=g.uid where g.display = 0 and g.quantity > 0 and g.type=?1 limit ?2, ?3" ,nativeQuery=true)
+    List<Map<String,Object>> findAllGoods(Integer type,Integer pagenum, Integer pagesize);
+
 
     @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid where g.display = 0 and g.quantity < 0 limit ?1, ?2" ,nativeQuery=true)
     List<Map<String,Object>> findAllWantGoods(Integer pagenum, Integer pagesize);
@@ -59,6 +71,10 @@ public interface GoodsRepository extends CrudRepository<Goods, Integer> {
     @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid " +
             "where g.display = 0 and g.quantity > 0 and g.uid=?1 limit ?2, ?3" ,nativeQuery=true)
     List<Map<String,Object>> findUserAllGoods(Integer userId, Integer pagenum, Integer pagesize);
+
+    @Query(value="select g.*,u.username,u.num from goods g join user u on u.id=g.uid " +
+            "where g.display = 0 and g.quantity > 0 and g.uid=?2 and g.type=?1 limit ?3, ?4" ,nativeQuery=true)
+    List<Map<String,Object>> findUserAllGoods(Integer type ,Integer userId, Integer pagenum, Integer pagesize);
     /**
      * 插入一条Goods
      */
