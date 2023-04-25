@@ -110,10 +110,12 @@ public class CartsController {
         }
     }
 
-    @PostMapping(path = "/front/add")
+    @PostMapping(path = "/front/addcart")
     public @ResponseBody R addToCarts(@RequestBody Map map){
-        String goodsId=map.get("goodsId").toString();
-        Integer num=Integer.valueOf(map.get("num").toString());
+        log.info("{}",map);
+        Integer num=Integer.valueOf(map.get("cartNum").toString());
+        Integer id=Integer.valueOf(map.get("goods_id").toString());
+        String goodsId=goodsService.findById(id).get().getGoods_id();
         Integer userId= BaseContext.getCurrentId();
 
         int res=cartsService.addToCart(userId,goodsId,num);

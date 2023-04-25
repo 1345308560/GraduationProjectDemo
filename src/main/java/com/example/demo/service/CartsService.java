@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,6 +72,18 @@ public class CartsService {
     public int addToCart(Integer userId, String goodsId, Integer num) {
         String json_value=findUserCarts(userId);
         JSONObject goods =JSONObject.parseObject(json_value);
+        if(goods.get("goods_id").equals("")){
+            List<String> goods_id=new ArrayList<>();
+            List<String> quantity=new ArrayList<>();
+            goods_id.add(goodsId);
+            goods.remove("goods_id");
+            goods.put("goods_id",goods_id);
+            quantity.add(num.toString());
+            goods.remove("num");
+            goods.put("num",quantity);
+            return updateGoods(userId,goods.toString());
+        }
+
         List<String> goods_id= JSON.parseArray(goods.getJSONArray("goods_id").toJSONString(),String.class);
         List<String> quantity= JSON.parseArray(goods.getJSONArray("num").toJSONString(),String.class);
         int res=isExist(goods_id,goodsId);
