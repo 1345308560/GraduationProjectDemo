@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -33,7 +35,7 @@ public class UsercommentService {
         return usercommentRepository.deleteComment(userId);
     }
 
-    public List<Usercomment> findAllComment(Integer pagenum, Integer pagesize) {
+    public List<Map<String,Object>> findAllComment(Integer pagenum, Integer pagesize) {
         // 获取商品的总数
         int total = getTotalPage();
         // 计算总页数
@@ -46,7 +48,7 @@ public class UsercommentService {
         return usercommentRepository.findAllComment(pagenum, pagesize);
     }
 
-    public List<Usercomment> findCertainUsersComment(Integer pagenum, Integer pagesize, String kind, String query) {
+    public List<Map<String,Object>> findCertainUsersComment(Integer pagenum, Integer pagesize, String kind, String query) {
         // 获取商品的总数
         int total = getCertainPage(kind,query);
         // 计算总页数
@@ -55,15 +57,25 @@ public class UsercommentService {
         if(pagenum > totalPage || pagenum < 1){
             return null;
         }
-
         pagenum=(pagenum-1)*pagesize;
-        String sql="select a.* from usercomment a join usercomment b " +
-                "on a.id = b.id " +
-                "where a.display=0 and b."+kind+" like '%"+query+"%'"+
-                " limit "+pagenum+" , "+pagesize;
+        String sql=null;
+        if(Objects.equals(kind, "uid1")){
+            sql="select a.*,u.username,u2.username reporter from usercomment a " +
+                    "join user u on a."+kind +"=u.id "+
+                    "join user u2 on a.uid2=u2.id "+
+                    "where a.display=0 and u.username like '%"+query+"%'"+
+                    " limit "+pagenum+" , "+pagesize;
+        }else{
+            sql="select a.*,u.username reporter,u2.username from usercomment a " +
+                    "join user u on a."+kind +"=u.id "+
+                    "join user u2 on a.uid1=u2.id "+
+                    "where a.display=0 and u.username like '%"+query+"%'"+
+                    " limit "+pagenum+" , "+pagesize;
+        }
+
         Query query1=entityManager.createNativeQuery(sql);
         query1.unwrap(NativeQueryImpl.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
-        List<Usercomment> resultList = query1.getResultList();
+        List<Map<String,Object>> resultList = query1.getResultList();
         return resultList;
     }
 
@@ -72,9 +84,9 @@ public class UsercommentService {
     }
 
     public int getCertainPage(String kind,String query){
-        String sql="select a.* from usercomment a join usercomment b " +
-                "on a.id = b.id " +
-                "where a.display=0 and b."+kind+" like '%"+query+"%'";
+        String sql="select a.* from usercomment a " +
+                "join user u on a."+kind +"=u.id "+
+                "where a.display=0 and u.username like '%"+query+"%'";
         Integer total= entityManager.createNativeQuery(sql).getResultList().size();
         return total;
     }

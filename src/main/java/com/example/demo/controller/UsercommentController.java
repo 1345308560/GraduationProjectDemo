@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.common.R;
 import com.example.demo.entity.User;
 import com.example.demo.entity.Usercomment;
+import com.example.demo.service.UserService;
 import com.example.demo.service.UsercommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,11 @@ public class UsercommentController {
     @Autowired
     UsercommentService usercommentService;
 
+    @Autowired
+    UserService userService;
+
     @GetMapping(path = "/all")
-    public @ResponseBody R<List<Usercomment>> getAllComment(@RequestParam Map<String,Object> map){
+    public @ResponseBody R<List<Map<String,Object>>> getAllComment(@RequestParam Map<String,Object> map){
         Integer pagenum= Integer.valueOf((String) map.get("pagenum"));
         Integer pagesize= Integer.valueOf((String) map.get("pagesize"));
         String query= map.get("query").toString();
@@ -41,8 +45,16 @@ public class UsercommentController {
         }else {
             log.info("query不为空");
             // 获取总页数
-            Integer total = usercommentService.getCertainPage(kind, query);
-            return R.success(usercommentService.findCertainUsersComment(pagenum, pagesize, kind, query)).add("total", total);
+            String querykind=null;
+
+            if(Objects.equals(kind, "username")){
+                querykind="uid1";
+            }else {
+                querykind="uid2";
+            }
+
+            Integer total = usercommentService.getCertainPage(querykind, query);
+            return R.success(usercommentService.findCertainUsersComment(pagenum, pagesize, querykind, query)).add("total", total);
         }
     }
 

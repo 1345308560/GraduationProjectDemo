@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UsercommentRepository extends CrudRepository<Usercomment, String> {
@@ -21,7 +22,10 @@ public interface UsercommentRepository extends CrudRepository<Usercomment, Strin
     @Query(value="select count(*) from usercomment where display = 0" ,nativeQuery=true)
     int countComment();
 
-    @Query(value="select * from usercomment where display = 0 limit ?1, ?2" ,nativeQuery=true)
-    List<Usercomment> findAllComment(Integer pagenum, Integer pagesize);
+    @Query(value="select uc.*,u1.username,u2.username reporter from usercomment uc " +
+            "join user u1 on uc.uid1=u1.id " +
+            "join user u2 on uc.uid2=u2.id " +
+            "where uc.display = 0 limit ?1, ?2" ,nativeQuery=true)
+    List<Map<String,Object>> findAllComment(Integer pagenum, Integer pagesize);
 
 }
